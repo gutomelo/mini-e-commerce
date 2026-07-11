@@ -40,6 +40,25 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/shared:
+    dependencies:
+      '@mini-e-commerce/types':
+        specifier: workspace:*
+        version: link:../types
+    devDependencies:
+      '@mini-e-commerce/config':
+        specifier: workspace:*
+        version: link:../config
+      '@types/node':
+        specifier: ^26.1.1
+        version: 26.1.1
+      eslint:
+        specifier: ^10.6.0
+        version: 10.6.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/types:
     devDependencies:
       '@mini-e-commerce/config':
@@ -151,6 +170,9 @@ packages:
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
+
+  '@types/node@26.1.1':
+    resolution: {integrity: sha512-nxAkRSVkN1Y0JC1W8ky/fTfkGsMmcrRsbx+3XoZE+rMOX71kLYTV7fLXpqud1GpbpP5TuffXFqfX7fH2GgZREw==}
 
   '@typescript-eslint/eslint-plugin@8.63.0':
     resolution: {integrity: sha512-rvwSgqT+DHpWdzfSzPatRLm02a0GlESt++9iy3hLCDY4BgkaLcl8LBi9Yh7XGFBpwcBE/K3024QuXWTpbz4FfQ==}
@@ -470,6 +492,9 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  undici-types@8.3.0:
+    resolution: {integrity: sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ==}
+
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
@@ -561,6 +586,10 @@ snapshots:
   '@types/estree@1.0.9': {}
 
   '@types/json-schema@7.0.15': {}
+
+  '@types/node@26.1.1':
+    dependencies:
+      undici-types: 8.3.0
 
   '@typescript-eslint/eslint-plugin@8.63.0(@typescript-eslint/parser@8.63.0(eslint@10.6.0)(typescript@5.9.3))(eslint@10.6.0)(typescript@5.9.3)':
     dependencies:
@@ -896,6 +925,8 @@ snapshots:
       - supports-color
 
   typescript@5.9.3: {}
+
+  undici-types@8.3.0: {}
 
   uri-js@4.4.1:
     dependencies:
