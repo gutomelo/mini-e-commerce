@@ -7,8 +7,13 @@ packages:
 overrides:
   typescript: ^5.9.3
 
-# Install-time build scripts pnpm should skip; both packages ship prebuilt
-# binaries (create-next-app ignored their builds in the apps/web scaffold).
+# Install-time build scripts pnpm should skip; these packages ship prebuilt
+# binaries via optional platform-specific packages (sharp/unrs-resolver from
+# the apps/web scaffold; the rest from the apps/admin Angular toolchain).
 allowBuilds:
+  '@parcel/watcher': false
+  esbuild: false
+  lmdb: false
+  msgpackr-extract: false
   sharp: false
   unrs-resolver: false
