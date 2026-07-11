@@ -19,6 +19,12 @@
       "skillPath": "skills/golang-code-style/SKILL.md",
       "computedHash": "1c949d9721fac34faf39e640a08c9f17b6449a64183824ac99d2e3785b1fef57"
     },
+    "golang-design-patterns": {
+      "source": "samber/cc-skills-golang",
+      "sourceType": "github",
+      "skillPath": "skills/golang-design-patterns/SKILL.md",
+      "computedHash": "be80b0298aa92d2563dae317e4558f96f0f4990684254c41e644bf35b7c40b5e"
+    },
     "java-springboot": {
       "source": "github/awesome-copilot",
       "sourceType": "github",
