@@ -23,7 +23,7 @@ Set up the Turborepo monorepo with pnpm workspaces, shared tooling (lint, format
 - [x] Add `.editorconfig` at the root (owner: main)
 - [x] Set up Husky + lint-staged: pre-commit runs lint-staged (Prettier on staged files; ESLint stays in `turbo lint` to keep commits fast) (owner: main)
 - [x] Set up commitlint with the Conventional Commits config and a `commit-msg` hook (owner: main)
-- [ ] Add root `.env.example` documenting shared environment variables (owner: main)
+- [x] Add root `.env.example` documenting shared environment variables (owner: main)
 - [x] Update `.gitignore` for node_modules, dist, .turbo, coverage, and real `.env` files (owner: main)
 - [ ] Update root `README.md`: monorepo structure, services, technologies, development workflow (owner: main)
 
