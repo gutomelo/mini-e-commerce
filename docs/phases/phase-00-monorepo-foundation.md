@@ -20,7 +20,7 @@ Set up the Turborepo monorepo with pnpm workspaces, shared tooling (lint, format
 - [x] Create `packages/types`: placeholder package for shared DTO/event types with `tsconfig` and build script (owner: main)
 - [x] Create `packages/shared`: placeholder package for shared utilities (owner: main)
 - [x] Create `packages/ui`: placeholder package for shared React UI components (owner: nextjs-developer)
-- [ ] Add `.editorconfig` at the root (owner: main)
+- [x] Add `.editorconfig` at the root (owner: main)
 - [ ] Set up Husky + lint-staged: pre-commit runs lint-staged (Prettier + ESLint on staged files) (owner: main)
 - [ ] Set up commitlint with the Conventional Commits config and a `commit-msg` hook (owner: main)
 - [ ] Add root `.env.example` documenting shared environment variables (owner: main)
