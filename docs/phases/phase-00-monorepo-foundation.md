@@ -21,7 +21,7 @@ Set up the Turborepo monorepo with pnpm workspaces, shared tooling (lint, format
 - [x] Create `packages/shared`: placeholder package for shared utilities (owner: main)
 - [x] Create `packages/ui`: placeholder package for shared React UI components (owner: nextjs-developer)
 - [x] Add `.editorconfig` at the root (owner: main)
-- [ ] Set up Husky + lint-staged: pre-commit runs lint-staged (Prettier + ESLint on staged files) (owner: main)
+- [x] Set up Husky + lint-staged: pre-commit runs lint-staged (Prettier on staged files; ESLint stays in `turbo lint` to keep commits fast) (owner: main)
 - [ ] Set up commitlint with the Conventional Commits config and a `commit-msg` hook (owner: main)
 - [ ] Add root `.env.example` documenting shared environment variables (owner: main)
 - [x] Update `.gitignore` for node_modules, dist, .turbo, coverage, and real `.env` files (owner: main)
