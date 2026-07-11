@@ -36,10 +36,10 @@ Set up the Turborepo monorepo with pnpm workspaces, shared tooling (lint, format
 
 ## Verification
 
-- [ ] `pnpm install` — completes without errors
-- [ ] `pnpm turbo run lint` — passes for all packages
-- [ ] `pnpm turbo run build` — passes for all packages
-- [ ] `echo "bad message" | pnpm exec commitlint` — exits non-zero (rejected)
-- [ ] `echo "feat: verify commitlint" | pnpm exec commitlint` — exits zero (accepted)
-- [ ] `test -f .husky/pre-commit && test -f .husky/commit-msg` — both git hooks exist
-- [ ] `test -f .env.example && ! test -f .env` — example env exists, no real env committed
+- [x] `pnpm install` — completes without errors
+- [x] `pnpm turbo run lint` — passes for all packages
+- [x] `pnpm turbo run build` — passes for all packages
+- [x] `echo "bad message" | pnpm exec commitlint` — exits non-zero (rejected)
+- [x] `echo "feat: verify commitlint" | pnpm exec commitlint` — exits zero (accepted)
+- [x] `test -f .husky/pre-commit && test -f .husky/commit-msg` — both git hooks exist
+- [x] `test -f .env.example && ! test -f .env` — example env exists, no real env committed

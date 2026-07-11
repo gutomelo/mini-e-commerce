@@ -5,17 +5,17 @@ Single source of truth for phase status. Only `/verify-phase` may set a phase to
 **Workflow:** `/create-spec` → `/plan-phase` → `/implement-phase` → `/verify-phase`.
 A phase may start only when the previous phase is `Done` (blocking gate enforced by `/implement-phase`).
 
-| # | Phase | Spec | Checklist | Status |
-|---|-------|------|-----------|--------|
-| 0 | Monorepo Foundation | [pipeline design](specs/2026-07-11-claude-code-pipeline-design.md) | [phase-00](phases/phase-00-monorepo-foundation.md) | In Progress |
-| 1 | Walking Skeleton | — | — | Not Started |
-| 2 | API Core (NestJS) | — | — | Not Started |
-| 3 | Storefront (Next.js) | — | — | Not Started |
-| 4 | Inventory Service (Go) | — | — | Not Started |
-| 5 | Payment Service (Spring Boot) | — | — | Not Started |
-| 6 | Event-Driven Integration (E2E) | — | — | Not Started |
-| 7 | Admin Panel (Angular) | — | — | Not Started |
-| 8 | Hardening & Deployment | — | — | Not Started |
+| #   | Phase                          | Spec                                                               | Checklist                                          | Status      |
+| --- | ------------------------------ | ------------------------------------------------------------------ | -------------------------------------------------- | ----------- |
+| 0   | Monorepo Foundation            | [pipeline design](specs/2026-07-11-claude-code-pipeline-design.md) | [phase-00](phases/phase-00-monorepo-foundation.md) | Done        |
+| 1   | Walking Skeleton               | —                                                                  | —                                                  | Not Started |
+| 2   | API Core (NestJS)              | —                                                                  | —                                                  | Not Started |
+| 3   | Storefront (Next.js)           | —                                                                  | —                                                  | Not Started |
+| 4   | Inventory Service (Go)         | —                                                                  | —                                                  | Not Started |
+| 5   | Payment Service (Spring Boot)  | —                                                                  | —                                                  | Not Started |
+| 6   | Event-Driven Integration (E2E) | —                                                                  | —                                                  | Not Started |
+| 7   | Admin Panel (Angular)          | —                                                                  | —                                                  | Not Started |
+| 8   | Hardening & Deployment         | —                                                                  | —                                                  | Not Started |
 
 ## Phase summaries
 
