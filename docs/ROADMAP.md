@@ -7,7 +7,7 @@ A phase may start only when the previous phase is `Done` (blocking gate enforced
 
 | # | Phase | Spec | Checklist | Status |
 |---|-------|------|-----------|--------|
-| 0 | Monorepo Foundation | [pipeline design](specs/2026-07-11-claude-code-pipeline-design.md) | [phase-00](phases/phase-00-monorepo-foundation.md) | Not Started |
+| 0 | Monorepo Foundation | [pipeline design](specs/2026-07-11-claude-code-pipeline-design.md) | [phase-00](phases/phase-00-monorepo-foundation.md) | In Progress |
 | 1 | Walking Skeleton | — | — | Not Started |
 | 2 | API Core (NestJS) | — | — | Not Started |
 | 3 | Storefront (Next.js) | — | — | Not Started |

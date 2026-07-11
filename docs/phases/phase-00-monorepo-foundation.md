@@ -9,8 +9,8 @@ Set up the Turborepo monorepo with pnpm workspaces, shared tooling (lint, format
 
 ## Prerequisites
 
-- [ ] Claude Code build pipeline is committed (spec, skills, agents, hooks)
-- [ ] Spec for this phase is `Approved`
+- [x] Claude Code build pipeline is committed (spec, skills, agents, hooks)
+- [x] Spec for this phase is `Approved`
 
 ## Tasks
 
