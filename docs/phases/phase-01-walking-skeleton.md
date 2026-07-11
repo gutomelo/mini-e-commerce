@@ -9,8 +9,8 @@ Stand up all five applications end to end with zero business logic: official-CLI
 
 ## Prerequisites
 
-- [ ] Phase 0 is `Done` in [ROADMAP.md](../ROADMAP.md)
-- [ ] Spec for this phase is `Approved`
+- [x] Phase 0 is `Done` in [ROADMAP.md](../ROADMAP.md)
+- [x] Spec for this phase is `Approved`
 
 ## Tasks
 
