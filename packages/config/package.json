@@ -1,0 +1,22 @@
+{
+  "name": "@mini-e-commerce/config",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared ESLint, Prettier, and TypeScript configurations for the monorepo",
+  "type": "module",
+  "exports": {
+    "./eslint": "./eslint/base.mjs",
+    "./prettier": "./prettier/index.mjs",
+    "./typescript": "./typescript/base.json"
+  },
+  "files": [
+    "eslint",
+    "prettier",
+    "typescript"
+  ],
+  "dependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint-config-prettier": "^10.1.8",
+    "typescript-eslint": "^8.63.0"
+  }
+}

@@ -16,7 +16,7 @@ Set up the Turborepo monorepo with pnpm workspaces, shared tooling (lint, format
 
 - [x] Initialize pnpm workspace: root `package.json` (private, engines, scripts) and `pnpm-workspace.yaml` covering `apps/*` and `packages/*` (owner: main)
 - [x] Add `turbo.json` with `build`, `dev`, `lint`, `test` pipelines and sensible caching (owner: main)
-- [ ] Create `packages/config`: shared ESLint, Prettier, and TypeScript configs consumed by all TS apps (owner: main)
+- [x] Create `packages/config`: shared ESLint, Prettier, and TypeScript configs consumed by all TS apps (owner: main)
 - [ ] Create `packages/types`: placeholder package for shared DTO/event types with `tsconfig` and build script (owner: main)
 - [ ] Create `packages/shared`: placeholder package for shared utilities (owner: main)
 - [ ] Create `packages/ui`: placeholder package for shared React UI components (owner: nextjs-developer)
@@ -24,7 +24,7 @@ Set up the Turborepo monorepo with pnpm workspaces, shared tooling (lint, format
 - [ ] Set up Husky + lint-staged: pre-commit runs lint-staged (Prettier + ESLint on staged files) (owner: main)
 - [ ] Set up commitlint with the Conventional Commits config and a `commit-msg` hook (owner: main)
 - [ ] Add root `.env.example` documenting shared environment variables (owner: main)
-- [ ] Update `.gitignore` for node_modules, dist, .turbo, coverage, and real `.env` files (owner: main)
+- [x] Update `.gitignore` for node_modules, dist, .turbo, coverage, and real `.env` files (owner: main)
 - [ ] Update root `README.md`: monorepo structure, services, technologies, development workflow (owner: main)
 
 ## Acceptance Criteria
