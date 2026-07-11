@@ -1,12 +1,11 @@
-import { randomUUID } from 'node:crypto';
-
 import type { EventEnvelope, EventName } from '@mini-e-commerce/types';
 
 /**
  * Generates a correlation id used to trace a request across services.
+ * Uses the Web Crypto API so it works on both Node.js and browser runtimes.
  */
 export function newCorrelationId(): string {
-  return randomUUID();
+  return globalThis.crypto.randomUUID();
 }
 
 /**
