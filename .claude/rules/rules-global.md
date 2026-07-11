@@ -2,14 +2,14 @@
 
 ## General Principles
 
-* Always prioritize readability, maintainability, and scalability.
-* Follow SOLID principles whenever applicable.
-* Keep code simple and avoid unnecessary abstractions.
-* Follow the Single Responsibility Principle.
-* Favor composition over inheritance.
-* Apply Clean Architecture concepts whenever possible.
-* Keep business rules independent from frameworks.
-* Prefer convention over configuration.
+- Always prioritize readability, maintainability, and scalability.
+- Follow SOLID principles whenever applicable.
+- Keep code simple and avoid unnecessary abstractions.
+- Follow the Single Responsibility Principle.
+- Favor composition over inheritance.
+- Apply Clean Architecture concepts whenever possible.
+- Keep business rules independent from frameworks.
+- Prefer convention over configuration.
 
 ---
 
@@ -28,11 +28,11 @@ docs/
 
 ## Applications
 
-* web (Next.js Storefront)
-* admin (Angular Admin)
-* api (NestJS API Gateway/BFF)
-* inventory (Go Inventory Service)
-* payment (Spring Boot Payment Service)
+- web (Next.js Storefront)
+- admin (Angular Admin)
+- api (NestJS API Gateway/BFF)
+- inventory (Go Inventory Service)
+- payment (Spring Boot Payment Service)
 
 ## Shared Packages
 
@@ -40,10 +40,10 @@ Use the `packages` directory only for reusable modules.
 
 Examples:
 
-* ui
-* shared
-* config
-* types
+- ui
+- shared
+- config
+- types
 
 Avoid duplicating shared code across applications.
 
@@ -59,10 +59,10 @@ Responsibilities must never overlap.
 
 Communication rules:
 
-* Frontends communicate only with NestJS.
-* NestJS orchestrates the application.
-* Inventory and Payment are independent services.
-* Services communicate using REST or asynchronous events.
+- Frontends communicate only with NestJS.
+- NestJS orchestrates the application.
+- Inventory and Payment are independent services.
+- Services communicate using REST or asynchronous events.
 
 Never allow frontends to communicate directly with Go or Spring Boot.
 
@@ -74,17 +74,17 @@ Use Upstash QStash for asynchronous communication.
 
 Examples:
 
-* order.created
-* inventory.updated
-* payment.completed
-* payment.failed
+- order.created
+- inventory.updated
+- payment.completed
+- payment.failed
 
 Every event must include:
 
-* event
-* timestamp
-* correlationId
-* payload
+- event
+- timestamp
+- correlationId
+- data
 
 Services should never depend directly on each other when an event is sufficient.
 
@@ -98,9 +98,9 @@ Cache only read operations.
 
 Examples:
 
-* Product List
-* Product Details
-* Categories
+- Product List
+- Product Details
+- Categories
 
 Always invalidate cache after write operations.
 
@@ -128,13 +128,13 @@ Follow RESTful conventions.
 
 Always:
 
-* Version APIs (`/api/v1`)
-* Return proper HTTP status codes
-* Validate all incoming requests
-* Use DTOs
-* Use pagination
-* Use filtering
-* Use consistent response objects
+- Version APIs (`/api/v1`)
+- Return proper HTTP status codes
+- Validate all incoming requests
+- Use DTOs
+- Use pagination
+- Use filtering
+- Use consistent response objects
 
 Generate Swagger/OpenAPI documentation.
 
@@ -144,13 +144,13 @@ Generate Swagger/OpenAPI documentation.
 
 Always implement:
 
-* JWT Authentication
-* Refresh Tokens
-* Password hashing (bcrypt)
-* Environment Variables
-* CORS
-* Rate Limiting
-* Input Validation
+- JWT Authentication
+- Refresh Tokens
+- Password hashing (bcrypt)
+- Environment Variables
+- CORS
+- Rate Limiting
+- Input Validation
 
 Never expose secrets.
 
@@ -166,10 +166,10 @@ Every request should include a Correlation ID.
 
 Never log:
 
-* Passwords
-* Tokens
-* Secrets
-* Sensitive personal information
+- Passwords
+- Tokens
+- Secrets
+- Sensitive personal information
 
 Errors should always provide meaningful context.
 
@@ -203,14 +203,14 @@ docker compose up
 
 Prioritize:
 
-* Unit Tests
-* Integration Tests
+- Unit Tests
+- Integration Tests
 
 Focus tests on:
 
-* Business Rules
-* Critical Flows
-* API Endpoints
+- Business Rules
+- Critical Flows
+- API Endpoints
 
 Avoid testing implementation details.
 
@@ -220,15 +220,15 @@ Avoid testing implementation details.
 
 Provide:
 
-* /health endpoint
-* Structured logs
-* Correlation IDs
+- /health endpoint
+- Structured logs
+- Correlation IDs
 
 Keep the project ready for future integration with:
 
-* OpenTelemetry
-* Prometheus
-* Grafana
+- OpenTelemetry
+- Prometheus
+- Grafana
 
 ---
 
@@ -240,10 +240,10 @@ Prefer Server Components.
 
 Only use Client Components when required:
 
-* State management
-* Browser APIs
-* Event handlers
-* Effects
+- State management
+- Browser APIs
+- Event handlers
+- Effects
 
 Avoid unnecessary client rendering.
 
@@ -294,9 +294,9 @@ Never fetch data directly inside UI components.
 
 Use:
 
-* data-access
-* server actions
-* services
+- data-access
+- server actions
+- services
 
 Keep data access isolated.
 
@@ -306,15 +306,15 @@ Keep data access isolated.
 
 Use:
 
-* Shadcn UI
-* Radix UI
-* Tailwind CSS
+- Shadcn UI
+- Radix UI
+- Tailwind CSS
 
 Avoid:
 
-* Inline styles
-* Massive components
-* Business logic inside UI
+- Inline styles
+- Massive components
+- Business logic inside UI
 
 ---
 
@@ -326,9 +326,9 @@ Never use `any` unless absolutely necessary.
 
 Always define:
 
-* Interfaces
-* Types
-* DTOs
+- Interfaces
+- Types
+- DTOs
 
 Prefer explicit types.
 
@@ -374,12 +374,12 @@ NestJS acts as the API Gateway (Backend for Frontend).
 
 Responsibilities:
 
-* Authentication
-* Users
-* Products
-* Orders
-* Cache
-* Event Publishing
+- Authentication
+- Users
+- Products
+- Orders
+- Cache
+- Event Publishing
 
 Controllers must remain thin.
 
@@ -395,9 +395,9 @@ Go is responsible only for Inventory.
 
 Responsibilities:
 
-* Inventory updates
-* Inventory queries
-* Event consumers
+- Inventory updates
+- Inventory queries
+- Event consumers
 
 Avoid framework-heavy solutions.
 
@@ -413,9 +413,9 @@ Spring Boot is responsible only for Payments.
 
 Responsibilities:
 
-* Payment processing
-* Payment status
-* Payment persistence
+- Payment processing
+- Payment status
+- Payment persistence
 
 Follow layered architecture.
 
@@ -440,10 +440,10 @@ presentation/
 
 Responsibilities:
 
-* Domain → Business Rules
-* Application → Use Cases
-* Infrastructure → Database, Redis, HTTP Clients
-* Presentation → Controllers, DTOs
+- Domain → Business Rules
+- Application → Use Cases
+- Infrastructure → Database, Redis, HTTP Clients
+- Presentation → Controllers, DTOs
 
 Never place business logic inside controllers.
 
@@ -453,11 +453,11 @@ Never place business logic inside controllers.
 
 Use:
 
-* ESLint
-* Prettier
-* EditorConfig
-* Husky
-* lint-staged
+- ESLint
+- Prettier
+- EditorConfig
+- Husky
+- lint-staged
 
 Follow Conventional Commits.
 
@@ -473,18 +473,18 @@ Avoid magic numbers.
 
 Every application must contain:
 
-* README
-* Environment Variables
-* Running Instructions
-* Architecture Overview
+- README
+- Environment Variables
+- Running Instructions
+- Architecture Overview
 
 The repository README should describe:
 
-* Monorepo structure
-* Services
-* Technologies
-* Application flow
-* Development workflow
+- Monorepo structure
+- Services
+- Technologies
+- Application flow
+- Development workflow
 
 ---
 
@@ -492,11 +492,10 @@ The repository README should describe:
 
 When generating code:
 
-* Prioritize simplicity.
-* Prefer maintainable solutions over clever solutions.
-* Avoid unnecessary abstractions.
-* Generate production-quality code.
-* Follow established framework conventions.
-* Keep responsibilities clearly separated.
-* Write code as if it will be maintained by a professional engineering team.
-
+- Prioritize simplicity.
+- Prefer maintainable solutions over clever solutions.
+- Avoid unnecessary abstractions.
+- Generate production-quality code.
+- Follow established framework conventions.
+- Keep responsibilities clearly separated.
+- Write code as if it will be maintained by a professional engineering team.
