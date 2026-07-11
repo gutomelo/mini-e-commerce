@@ -1,0 +1,11 @@
+{
+  "name": "mini-e-commerce",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Portfolio e-commerce monorepo demonstrating Clean Architecture and event-driven design across Next.js, Angular, NestJS, Go, and Spring Boot",
+  "license": "MIT",
+  "packageManager": "pnpm@11.11.0",
+  "engines": {
+    "node": ">=22"
+  }
+}
