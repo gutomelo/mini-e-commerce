@@ -6,3 +6,9 @@ packages:
 # workspace on the 5.x line until the tooling catches up.
 overrides:
   typescript: ^5.9.3
+
+# Install-time build scripts pnpm should skip; both packages ship prebuilt
+# binaries (create-next-app ignored their builds in the apps/web scaffold).
+allowBuilds:
+  sharp: false
+  unrs-resolver: false

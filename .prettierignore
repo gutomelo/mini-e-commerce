@@ -5,3 +5,4 @@ coverage
 pnpm-lock.yaml
 .next
 .angular
+next-env.d.ts

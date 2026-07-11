@@ -14,7 +14,7 @@ Stand up all five applications end to end with zero business logic: official-CLI
 
 ## Tasks
 
-- [ ] Scaffold `apps/web` with `create-next-app` (TypeScript, App Router, Tailwind, ESLint, pnpm); wire workspace Prettier config; add `GET /health` route handler returning `{"status":"ok","service":"web"}` (owner: nextjs-developer)
+- [x] Scaffold `apps/web` with `create-next-app` (TypeScript, App Router, Tailwind, ESLint, pnpm); wire workspace Prettier config; add `GET /health` route handler returning `{"status":"ok","service":"web"}` (owner: nextjs-developer)
 - [ ] Scaffold `apps/api` with `nest new` (pnpm); set global prefix `api` and port `3001`; add `GET /api/health` returning `{"status":"ok","service":"api"}` (owner: nestjs-developer)
 - [ ] Scaffold `apps/admin` with `ng new` (standalone, SCSS, no SSR); configure `baseHref` `/admin/`; keep generator ESLint/test defaults (owner: angular-developer)
 - [ ] Scaffold `apps/inventory` with `go mod init`; standard-library `net/http` server on `8081` with `GET /health` returning `{"status":"ok","service":"inventory"}` (owner: go-developer)
