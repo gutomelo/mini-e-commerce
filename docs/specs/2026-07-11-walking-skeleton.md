@@ -1,7 +1,7 @@
 # Spec: Walking Skeleton
 
 - **Date:** 2026-07-11
-- **Status:** Draft
+- **Status:** Approved
 - **Phase:** 1
 
 ## Overview
