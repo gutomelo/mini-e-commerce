@@ -15,7 +15,7 @@ Set up the Turborepo monorepo with pnpm workspaces, shared tooling (lint, format
 ## Tasks
 
 - [x] Initialize pnpm workspace: root `package.json` (private, engines, scripts) and `pnpm-workspace.yaml` covering `apps/*` and `packages/*` (owner: main)
-- [ ] Add `turbo.json` with `build`, `dev`, `lint`, `test` pipelines and sensible caching (owner: main)
+- [x] Add `turbo.json` with `build`, `dev`, `lint`, `test` pipelines and sensible caching (owner: main)
 - [ ] Create `packages/config`: shared ESLint, Prettier, and TypeScript configs consumed by all TS apps (owner: main)
 - [ ] Create `packages/types`: placeholder package for shared DTO/event types with `tsconfig` and build script (owner: main)
 - [ ] Create `packages/shared`: placeholder package for shared utilities (owner: main)
