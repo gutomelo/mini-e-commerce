@@ -46,3 +46,6 @@ pnpm-debug.log*
 
 # Vercel
 .vercel
+
+# Go build artifacts
+apps/inventory/server
