@@ -23,9 +23,11 @@ if printf '%s' "$cmd" | grep -q '<<'; then
   subject="$(printf '%s\n' "$cmd" | awk '/git[[:space:]]+commit/ && /<</ { found = 1; next } found { print; exit }')"
 else
   norm="$(printf '%s' "$cmd" | tr -d '\\')"
-  subject="$(printf '%s' "$norm" | sed -n \
-    -e "s/.*--message[= ][[:space:]]*[\"']\([^\"']*\).*/\1/p" \
-    -e "s/.*-m[= ][[:space:]]*[\"']\([^\"']*\).*/\1/p" | head -n1)"
+  # First -m/--message only: with subject + body flags, the subject comes first.
+  subject="$(printf '%s' "$norm" \
+    | grep -oE "(--message|-m)[= ][[:space:]]*[\"'][^\"']*" \
+    | head -n1 \
+    | sed -E "s/^(--message|-m)[= ][[:space:]]*[\"']//")"
 fi
 
 [ -z "$subject" ] && exit 0
