@@ -22,7 +22,7 @@ Stand up all five applications end to end with zero business logic: official-CLI
 - [x] Integrate all apps into the workspace: web/admin/api run under `turbo build lint dev`; add thin `package.json` wrappers (`build`, `dev`) to inventory and payment so Turborepo drives every app (owner: main)
 - [x] Multi-stage Dockerfile for `apps/web` (standalone Next.js output, non-root runtime) (owner: nextjs-developer)
 - [x] Multi-stage Dockerfile for `apps/api` (build → slim Node runtime, non-root) (owner: nestjs-developer)
-- [ ] Multi-stage Dockerfile for `apps/admin` (Angular build → `nginx:alpine` static serve with `/health` location) (owner: angular-developer)
+- [x] Multi-stage Dockerfile for `apps/admin` (Angular build → `nginx:alpine` static serve with `/health` location) (owner: angular-developer)
 - [ ] Multi-stage Dockerfile for `apps/inventory` (Go build → minimal runtime image) (owner: go-developer)
 - [ ] Multi-stage Dockerfile for `apps/payment` (Maven build → JRE runtime image) (owner: spring-developer)
 - [ ] Reverse proxy config in `docker/nginx/`: `/` → web, `/admin/` → admin, `/api/` → api; no routes to inventory/payment (owner: main)
