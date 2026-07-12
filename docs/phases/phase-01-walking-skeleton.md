@@ -40,16 +40,16 @@ Stand up all five applications end to end with zero business logic: official-CLI
 
 ## Verification
 
-- [ ] `pnpm install` — completes without errors
-- [ ] `pnpm turbo run build lint` — passes for all packages and apps
-- [ ] `(cd apps/inventory && go vet ./...)` — exits 0
-- [ ] `(cd apps/payment && ./mvnw -q test)` — exits 0 (generated context test passes)
-- [ ] `docker compose build` — all five app images build successfully
-- [ ] `docker compose up -d --wait` — exits 0 with all services healthy
-- [ ] `curl -fsS http://localhost:8080/api/health` — returns `{"status":"ok","service":"api"}`
-- [ ] `curl -fsS -o /dev/null http://localhost:8080/` — exits 0 (web served through the proxy)
-- [ ] `curl -fsS -o /dev/null http://localhost:8080/admin/` — exits 0 (admin served through the proxy)
-- [ ] `docker compose exec nginx curl -fsS http://inventory:8081/health` — returns `{"status":"ok","service":"inventory"}`
-- [ ] `docker compose exec nginx curl -fsS http://payment:8082/health` — returns `{"status":"ok","service":"payment"}`
-- [ ] `! docker compose ps inventory payment | grep '0.0.0.0'` — exits 0 (no host ports published for internal services)
-- [ ] `docker compose down -v` — exits 0 (clean teardown)
+- [x] `pnpm install` — completes without errors
+- [x] `pnpm turbo run build lint` — passes for all packages and apps
+- [x] `(cd apps/inventory && go vet ./...)` — exits 0
+- [x] `(cd apps/payment && ./mvnw -q test)` — exits 0 (generated context test passes)
+- [x] `docker compose build` — all five app images build successfully
+- [x] `docker compose up -d --wait` — exits 0 with all services healthy
+- [x] `curl -fsS http://localhost:8080/api/health` — returns `{"status":"ok","service":"api"}`
+- [x] `curl -fsS -o /dev/null http://localhost:8080/` — exits 0 (web served through the proxy)
+- [x] `curl -fsS -o /dev/null http://localhost:8080/admin/` — exits 0 (admin served through the proxy)
+- [x] `docker compose exec nginx curl -fsS http://inventory:8081/health` — returns `{"status":"ok","service":"inventory"}`
+- [x] `docker compose exec nginx curl -fsS http://payment:8082/health` — returns `{"status":"ok","service":"payment"}`
+- [x] `! docker compose ps inventory payment | grep '0.0.0.0'` — exits 0 (no host ports published for internal services)
+- [x] `docker compose down -v` — exits 0 (clean teardown)
