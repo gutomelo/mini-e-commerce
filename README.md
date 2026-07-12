@@ -46,7 +46,7 @@ Work advances through phases tracked in [docs/ROADMAP.md](docs/ROADMAP.md), each
 
 ## Getting started
 
-Requirements: Node.js >= 22 (with corepack), pnpm 11 (`corepack enable pnpm`).
+Requirements: Node.js >= 22 (with corepack), pnpm 11 (`corepack enable pnpm`), Go 1.25+, JDK 21, Docker + Compose.
 
 ```bash
 pnpm install        # install all workspace dependencies
@@ -57,6 +57,24 @@ pnpm format         # prettier --write .
 ```
 
 Environment variables are documented in [.env.example](.env.example). Copy it to `.env` and fill in real values — real `.env` files are never committed.
+
+## Docker Compose (integration environment)
+
+Production-style images for all five apps behind an Nginx single entrypoint:
+
+```bash
+docker compose build          # build the five app images
+docker compose up -d --wait   # postgres + apps + proxy, all healthchecked
+docker compose down -v        # clean teardown
+```
+
+- `http://localhost:8080/` — storefront (web)
+- `http://localhost:8080/admin/` — admin panel
+- `http://localhost:8080/api/health` — API gateway
+- `inventory` and `payment` are internal-only (no host ports) — frontends talk exclusively to the API
+- PostgreSQL is published on `localhost:5432` for development tooling
+
+Daily development runs outside Docker (`pnpm dev`, `go run ./cmd/server`, `./mvnw spring-boot:run`); Compose is the integration/demo environment mirroring the future Fly.io deployment.
 
 > TypeScript is pinned to the 5.9.x line workspace-wide (`pnpm-workspace.yaml` overrides) until typescript-eslint supports TypeScript >= 6.
 
