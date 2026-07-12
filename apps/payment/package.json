@@ -1,0 +1,10 @@
+{
+  "name": "payment",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Thin Turborepo wrapper for the Spring Boot payment service (requires JDK 21)",
+  "scripts": {
+    "build": "./mvnw -q -DskipTests package",
+    "dev": "./mvnw spring-boot:run"
+  }
+}

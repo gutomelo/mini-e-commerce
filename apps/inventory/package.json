@@ -1,0 +1,10 @@
+{
+  "name": "inventory",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Thin Turborepo wrapper for the Go inventory service",
+  "scripts": {
+    "build": "go build ./...",
+    "dev": "go run ./cmd/server"
+  }
+}
