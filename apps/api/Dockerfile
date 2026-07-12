@@ -8,7 +8,7 @@ RUN corepack enable pnpm
 FROM base AS pruner
 WORKDIR /repo
 COPY . .
-RUN pnpm dlx turbo@^2 prune api --docker
+RUN pnpm dlx turbo@2.10.4 prune api --docker
 
 # Install all dependencies and build
 FROM base AS builder
@@ -24,7 +24,7 @@ WORKDIR /repo
 ENV NODE_ENV=production
 ENV PORT=3001
 COPY --from=pruner /repo/out/json/ .
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 COPY --from=builder --chown=node:node /repo/apps/api/dist ./apps/api/dist
 USER node
 EXPOSE 3001

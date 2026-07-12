@@ -8,7 +8,7 @@ RUN corepack enable pnpm
 FROM base AS pruner
 WORKDIR /repo
 COPY . .
-RUN pnpm dlx turbo@^2 prune web --docker
+RUN pnpm dlx turbo@2.10.4 prune web --docker
 
 # Install dependencies and build
 FROM base AS builder

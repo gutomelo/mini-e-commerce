@@ -8,7 +8,7 @@ RUN corepack enable pnpm
 FROM base AS pruner
 WORKDIR /repo
 COPY . .
-RUN pnpm dlx turbo@^2 prune admin --docker
+RUN pnpm dlx turbo@2.10.4 prune admin --docker
 
 # Install dependencies and build the static bundle
 FROM base AS builder
