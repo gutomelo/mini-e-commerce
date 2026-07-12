@@ -72,7 +72,7 @@ docker compose down -v        # clean teardown
 - `http://localhost:8080/admin/` — admin panel
 - `http://localhost:8080/api/health` — API gateway
 - `inventory` and `payment` are internal-only (no host ports) — frontends talk exclusively to the API
-- PostgreSQL is published on `localhost:5432` for development tooling
+- PostgreSQL is published on `localhost:5433` for development tooling (the container listens on 5432 in-network; 5433 avoids clashing with a host PostgreSQL)
 
 Daily development runs outside Docker (`pnpm dev`, `go run ./cmd/server`, `./mvnw spring-boot:run`); Compose is the integration/demo environment mirroring the future Fly.io deployment.
 

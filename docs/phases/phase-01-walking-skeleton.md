@@ -26,7 +26,7 @@ Stand up all five applications end to end with zero business logic: official-CLI
 - [x] Multi-stage Dockerfile for `apps/inventory` (Go build → minimal runtime image) (owner: go-developer)
 - [x] Multi-stage Dockerfile for `apps/payment` (Maven build → JRE runtime image) (owner: spring-developer)
 - [x] Reverse proxy config in `docker/nginx/`: `/` → web, `/admin/` → admin, `/api/` → api; no routes to inventory/payment (owner: main)
-- [x] Root `docker-compose.yml`: postgres (named volume, healthcheck, host port 5432), nginx (host port 8080), five apps with `/health` healthchecks and `depends_on`; only nginx and postgres publish host ports (owner: main)
+- [x] Root `docker-compose.yml`: postgres (named volume, healthcheck, host port 5433), nginx (host port 8080), five apps with `/health` healthchecks and `depends_on`; only nginx and postgres publish host ports (owner: main)
 - [x] Add a minimal README to each app (purpose, local run, env vars) and update the root README with the Compose workflow (owner: main)
 
 ## Acceptance Criteria

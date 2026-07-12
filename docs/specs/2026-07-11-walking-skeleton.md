@@ -43,7 +43,7 @@ host :8080 ──► nginx ──► /        ──► web       (Next.js,  :30
 
 compose network only:   inventory (Go,     :8081)
                         payment   (Spring, :8082)
-                        postgres  (:5432, also published to host for dev tooling)
+                        postgres  (:5432 in-network, published on host :5433 for dev tooling)
 ```
 
 - All containers share the default Compose network; service discovery by service name.
@@ -55,7 +55,7 @@ compose network only:   inventory (Go,     :8081)
 ## Data & Contracts
 
 - **Health contract** (all five services): `GET /health` → `200 OK`, `Content-Type: application/json`, body `{"status":"ok","service":"web"|"admin"|"api"|"inventory"|"payment"}`. The payment service remaps Spring Actuator so `/health` serves this shape (or a thin controller wraps it).
-- **Ports:** web `3000`, api `3001`, admin `80` (in-container), inventory `8081`, payment `8082`, postgres `5432` (published), nginx `80` in-container → host `8080`. Only nginx and postgres publish host ports.
+- **Ports:** web `3000`, api `3001`, admin `80` (in-container), inventory `8081`, payment `8082`, postgres `5432` in-network (published on host `5433` — the host's own PostgreSQL occupies `5432`), nginx `80` in-container → host `8080`. Only nginx and postgres publish host ports.
 - **Nginx routes:** `/` → `web:3000`, `/admin/` → `admin:80`, `/api/` → `api:3001` (NestJS global prefix `api`, so `/api/health` resolves). No routes to inventory or payment.
 - **Environment:** Postgres credentials come from the root `.env` (documented in `.env.example`, already present); Compose reads them via `env_file`/variable substitution. No new secrets this phase.
 - No database schemas, events, or API DTOs are defined in this phase.

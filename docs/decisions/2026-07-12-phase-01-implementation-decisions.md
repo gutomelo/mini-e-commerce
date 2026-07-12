@@ -23,6 +23,10 @@ The plan assigned each Dockerfile to its stack specialist agent. With the Docker
 
 `docker-compose.yml` uses variable substitution with safe defaults (`${POSTGRES_USER:-postgres}` etc.) instead of a required `env_file`, so the stack boots without a `.env` while still honoring one when present. No app connects to PostgreSQL in this phase.
 
-## 6. Turborepo wrappers for Go and Maven
+## 6. Compose postgres published on host port 5433
+
+The development machine runs its own PostgreSQL service on 5432, so `docker compose up` could not bind the spec's original host port. Decided with the user during the Phase 01 gate: the compose postgres publishes `5433:5432` (in-network port unchanged); spec, checklist, and README were updated accordingly. Later phases connect through the Compose network (`postgres:5432`) or `localhost:5433` from the host.
+
+## 7. Turborepo wrappers for Go and Maven
 
 `apps/inventory` and `apps/payment` carry thin `package.json` wrappers (`build`, `dev`) plus per-package `turbo.json` overrides (`outputs: []` for Go, `target/**` for Maven) so one command drives all five stacks without polluting the root task config.
