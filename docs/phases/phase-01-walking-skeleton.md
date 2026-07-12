@@ -18,7 +18,7 @@ Stand up all five applications end to end with zero business logic: official-CLI
 - [x] Scaffold `apps/api` with `nest new` (pnpm); set global prefix `api` and port `3001`; add `GET /api/health` returning `{"status":"ok","service":"api"}` (owner: nestjs-developer)
 - [x] Scaffold `apps/admin` with `ng new` (standalone, SCSS, no SSR); configure `baseHref` `/admin/`; keep generator ESLint/test defaults (owner: angular-developer)
 - [x] Scaffold `apps/inventory` with `go mod init`; standard-library `net/http` server on `8081` with `GET /health` returning `{"status":"ok","service":"inventory"}` (owner: go-developer)
-- [ ] Scaffold `apps/payment` via Spring Initializr (Maven, current LTS Java, `web` + `actuator`); port `8082`; expose `GET /health` returning `{"status":"ok","service":"payment"}` (owner: spring-developer)
+- [x] Scaffold `apps/payment` via Spring Initializr (Maven, current LTS Java, `web` + `actuator`); port `8082`; expose `GET /health` returning `{"status":"ok","service":"payment"}` (owner: spring-developer)
 - [ ] Integrate all apps into the workspace: web/admin/api run under `turbo build lint dev`; add thin `package.json` wrappers (`build`, `dev`) to inventory and payment so Turborepo drives every app (owner: main)
 - [ ] Multi-stage Dockerfile for `apps/web` (standalone Next.js output, non-root runtime) (owner: nextjs-developer)
 - [ ] Multi-stage Dockerfile for `apps/api` (build → slim Node runtime, non-root) (owner: nestjs-developer)
