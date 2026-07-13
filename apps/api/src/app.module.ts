@@ -8,6 +8,7 @@ import { CacheModule } from './infrastructure/cache/cache.module';
 import { GlobalExceptionFilter } from './presentation/filters/global-exception.filter';
 import { AuthModule } from './presentation/auth/auth.module';
 import { UsersModule } from './presentation/users/users.module';
+import { CategoriesModule } from './presentation/categories/categories.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UsersModule } from './presentation/users/users.module';
     CacheModule,
     AuthModule,
     UsersModule,
+    CategoriesModule,
     ThrottlerModule.forRoot([
       // Default bucket applied to every route unless overridden with @Throttle.
       { name: 'default', ttl: 60_000, limit: 100 },
