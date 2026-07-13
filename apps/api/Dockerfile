@@ -40,6 +40,12 @@ COPY --from=builder /repo/apps/api/src/generated ./apps/api/src/generated
 # The seed imports the database-url resolver from src
 COPY --from=builder /repo/apps/api/src/infrastructure/prisma/database-url.ts ./apps/api/src/infrastructure/prisma/database-url.ts
 COPY --from=builder --chown=node:node /repo/apps/api/dist ./apps/api/dist
+# Workspace packages the api app imports at runtime (@mini-e-commerce/shared,
+# @mini-e-commerce/types) are symlinked by the pnpm install above but only
+# ship their source — `pnpm install --prod` never runs their build script.
+# Copy the builder's compiled `dist/` output for each into place.
+COPY --from=builder --chown=node:node /repo/packages/shared/dist ./packages/shared/dist
+COPY --from=builder --chown=node:node /repo/packages/types/dist ./packages/types/dist
 COPY --chmod=755 apps/api/docker-entrypoint.sh ./apps/api/docker-entrypoint.sh
 USER node
 EXPOSE 3001
