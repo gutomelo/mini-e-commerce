@@ -13,4 +13,7 @@ export type { ProductCardProps } from './components/product-card.js';
 export { CartBadge } from './components/cart-badge.js';
 export type { CartBadgeProps } from './components/cart-badge.js';
 
+export { Pagination } from './components/pagination.js';
+export type { PaginationProps } from './components/pagination.js';
+
 export { cn, formatPriceCents } from './lib/utils.js';
