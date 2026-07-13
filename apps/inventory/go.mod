@@ -3,8 +3,10 @@ module github.com/gmsoftware/mini-e-commerce/inventory
 go 1.25.5
 
 require (
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/golang-migrate/migrate/v4 v4.19.1
 	github.com/jackc/pgx/v5 v5.10.0
+	github.com/upstash/qstash-go v1.0.0
 )
 
 require (
