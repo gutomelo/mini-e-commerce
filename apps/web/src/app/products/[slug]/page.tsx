@@ -7,6 +7,8 @@ import type { ReactElement } from 'react';
 import { ApiError } from '@/data-access/http-client';
 import { getProduct, type Product } from '@/data-access/products';
 
+import { AddToCartButton } from './_components/add-to-cart-button';
+
 interface ProductDetailPageProps {
   params: Promise<{ slug: string }>;
 }
@@ -57,7 +59,7 @@ export default async function ProductDetailPage({
 
         <p className="text-sm text-muted-foreground">{product.description}</p>
 
-        {/* Add-to-cart control lands here (Task #56 — cart). */}
+        <AddToCartButton productId={product.id} />
 
         <Link href="/products" className="text-sm font-medium underline underline-offset-4">
           Back to products
