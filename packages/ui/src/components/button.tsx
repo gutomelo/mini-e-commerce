@@ -1,21 +1,65 @@
-import type { ReactElement, ReactNode } from 'react';
+import { Slot } from '@radix-ui/react-slot';
+import { cva, type VariantProps } from 'class-variance-authority';
+import type { ButtonHTMLAttributes, ReactElement } from 'react';
 
-export type ButtonVariant = 'primary' | 'secondary';
+import { cn } from '../lib/utils.js';
 
-export interface ButtonProps {
-  children: ReactNode;
-  onClick?: () => void;
-  variant?: ButtonVariant;
+const buttonVariants = cva(
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 [&_svg]:pointer-events-none [&_svg]:shrink-0',
+  {
+    variants: {
+      variant: {
+        default: 'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90',
+        destructive: 'bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90',
+        outline: 'border border-input bg-background shadow-xs hover:bg-secondary',
+        secondary: 'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
+        ghost: 'hover:bg-secondary hover:text-secondary-foreground',
+        link: 'text-primary underline-offset-4 hover:underline',
+      },
+      size: {
+        default: 'h-9 px-4 py-2',
+        sm: 'h-8 rounded-md px-3 text-xs',
+        lg: 'h-10 rounded-md px-6',
+        icon: 'size-9',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+      size: 'default',
+    },
+  },
+);
+
+export type ButtonVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>;
+export type ButtonSize = NonNullable<VariantProps<typeof buttonVariants>['size']>;
+
+export interface ButtonProps
+  extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
+  /** Render as the child element instead of a `<button>` (Radix Slot pattern). */
+  asChild?: boolean;
 }
 
 /**
- * Placeholder button for the shared UI package.
- * Styling (Tailwind/Shadcn) arrives with the storefront in a later phase.
+ * Shadcn-style button built on class-variance-authority and Radix Slot.
+ * Purely presentational: no data fetching or side effects beyond the
+ * caller-supplied `onClick`/`type`.
  */
-export function Button({ children, onClick, variant = 'primary' }: ButtonProps): ReactElement {
+export function Button({
+  className,
+  variant,
+  size,
+  asChild = false,
+  type = 'button',
+  ...props
+}: ButtonProps): ReactElement {
+  const Comp = asChild ? Slot : 'button';
+
   return (
-    <button type="button" data-variant={variant} onClick={onClick}>
-      {children}
-    </button>
+    <Comp
+      data-slot="button"
+      type={asChild ? undefined : type}
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    />
   );
 }
