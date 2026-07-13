@@ -12,16 +12,26 @@ export const metadata: Metadata = {
 };
 
 interface ProductsPageProps {
-  searchParams: Promise<{ page?: string; search?: string; category?: string }>;
+  searchParams: Promise<{ page?: string; limit?: string; search?: string; category?: string }>;
 }
 
-function buildProductsHref(page: number, filters: { search?: string; category?: string }): string {
+interface ProductsFilters {
+  search?: string;
+  category?: string;
+  /** Page size override, e.g. for a bookmarked/shared URL. Omitted keeps the API's default. */
+  limit?: number;
+}
+
+function buildProductsHref(page: number, filters: ProductsFilters): string {
   const params = new URLSearchParams();
   if (filters.search) {
     params.set('search', filters.search);
   }
   if (filters.category) {
     params.set('category', filters.category);
+  }
+  if (filters.limit) {
+    params.set('limit', String(filters.limit));
   }
   if (page > 1) {
     params.set('page', String(page));
@@ -33,12 +43,14 @@ function buildProductsHref(page: number, filters: { search?: string; category?: 
 export default async function ProductsPage({
   searchParams,
 }: ProductsPageProps): Promise<ReactElement> {
-  const { page: pageParam, search, category } = await searchParams;
+  const { page: pageParam, limit: limitParam, search, category } = await searchParams;
   const parsedPage = Number(pageParam);
   const page = Number.isInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+  const parsedLimit = Number(limitParam);
+  const limit = Number.isInteger(parsedLimit) && parsedLimit > 0 ? parsedLimit : undefined;
 
   const [productsResponse, categories] = await Promise.all([
-    listProducts({ page, search: search || undefined, category: category || undefined }),
+    listProducts({ page, limit, search: search || undefined, category: category || undefined }),
     listCategories(),
   ]);
 
@@ -69,7 +81,7 @@ export default async function ProductsPage({
           <Pagination
             page={meta.page}
             totalPages={meta.totalPages}
-            buildHref={(targetPage) => buildProductsHref(targetPage, { search, category })}
+            buildHref={(targetPage) => buildProductsHref(targetPage, { search, category, limit })}
           />
         </>
       )}

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { ReactElement } from 'react';
 
+import { ApiError } from '@/data-access/http-client';
 import { listOrders } from '@/data-access/orders';
 import { getAccessToken } from '@/lib/session';
 
@@ -42,7 +43,19 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps): Pro
   const parsedPage = Number(pageParam);
   const page = Number.isInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
 
-  const { data: orders, meta } = await listOrders({ page });
+  let listResult;
+  try {
+    listResult = await listOrders({ page });
+  } catch (error) {
+    if (error instanceof ApiError && error.statusCode === 401) {
+      // See the identical comment in `app/orders/[id]/page.tsx`: a silent
+      // refresh that fails here means the session is genuinely
+      // unrecoverable — redirect rather than crash on an unhandled 401.
+      redirect('/login');
+    }
+    throw error;
+  }
+  const { data: orders, meta } = listResult;
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-8">

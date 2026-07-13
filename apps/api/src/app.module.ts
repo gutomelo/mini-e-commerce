@@ -26,8 +26,14 @@ import { OrdersModule } from './presentation/orders/orders.module';
       // Default bucket applied to every route unless overridden with @Throttle.
       { name: 'default', ttl: 60_000, limit: 100 },
       // Stricter bucket reserved for auth endpoints (task #40 references it
-      // via `@Throttle({ auth: { limit: 10, ttl: 60000 } })`).
-      { name: 'auth', ttl: 60_000, limit: 10 },
+      // via `@Throttle({ auth: { limit: 10, ttl: 60000 } })`). Overridable via
+      // `AUTH_THROTTLE_LIMIT` (falls back to the production default of 10)
+      // so the storefront's Playwright e2e suite — which legitimately issues
+      // more than 10 auth calls per run across its scenarios, all from the
+      // same loopback address — can raise it for its own spawned API
+      // instance without changing prod/dev behavior or the API's own
+      // `test:e2e` suite, which never sets this variable.
+      { name: 'auth', ttl: 60_000, limit: Number(process.env.AUTH_THROTTLE_LIMIT) || 10 },
     ]),
   ],
   controllers: [HealthController],

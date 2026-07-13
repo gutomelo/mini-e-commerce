@@ -31,6 +31,14 @@ async function loadOrder(id: string): Promise<Order> {
     if (error instanceof ApiError && error.statusCode === 404) {
       notFound();
     }
+    if (error instanceof ApiError && error.statusCode === 401) {
+      // `authFetch` already tried a silent refresh and gave up (e.g. the
+      // refresh token itself was rejected — expired, or already rotated
+      // away by an earlier refresh this session never got to persist, since
+      // cookie writes from a Server Component render are a no-op). Bounce
+      // to `/login` instead of letting the page crash on an unhandled 401.
+      redirect('/login');
+    }
     throw error;
   }
 }

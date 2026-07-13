@@ -23,6 +23,13 @@ async function loadOrder(id: string): Promise<Order> {
     if (error instanceof ApiError && error.statusCode === 404) {
       notFound();
     }
+    if (error instanceof ApiError && error.statusCode === 401) {
+      // See the identical comment in `app/orders/[id]/page.tsx`: a silent
+      // refresh that fails here means the session is genuinely
+      // unrecoverable, not just a transient hiccup — redirect rather than
+      // crash on an unhandled 401.
+      redirect('/login');
+    }
     throw error;
   }
 }

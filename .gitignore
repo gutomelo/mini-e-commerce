@@ -15,6 +15,10 @@ next-env.d.ts
 
 # Testing
 coverage/
+apps/web/test-results/
+apps/web/playwright-report/
+apps/web/blob-report/
+apps/web/playwright/.cache/
 
 # Go
 apps/inventory/bin/
