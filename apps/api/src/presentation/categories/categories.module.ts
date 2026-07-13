@@ -12,6 +12,10 @@ import { CategoriesController } from './categories.controller';
  * Imports `AuthModule` to reuse its `JwtAuthGuard`/`RolesGuard` bindings for
  * the ADMIN-only write endpoints. `CachePort` is bound globally by
  * `CacheModule` and does not need to be re-imported here.
+ *
+ * `CategoryRepository` is exported so `ProductsModule` can reuse the same
+ * `PrismaCategoryRepository` binding to validate `categoryId` on product
+ * create/update without re-registering it.
  */
 @Module({
   imports: [AuthModule],
@@ -23,5 +27,6 @@ import { CategoriesController } from './categories.controller';
     UpdateCategoryUseCase,
     DeleteCategoryUseCase,
   ],
+  exports: [CategoryRepository],
 })
 export class CategoriesModule {}

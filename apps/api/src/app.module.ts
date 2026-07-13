@@ -9,6 +9,7 @@ import { GlobalExceptionFilter } from './presentation/filters/global-exception.f
 import { AuthModule } from './presentation/auth/auth.module';
 import { UsersModule } from './presentation/users/users.module';
 import { CategoriesModule } from './presentation/categories/categories.module';
+import { ProductsModule } from './presentation/products/products.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CategoriesModule } from './presentation/categories/categories.module';
     AuthModule,
     UsersModule,
     CategoriesModule,
+    ProductsModule,
     ThrottlerModule.forRoot([
       // Default bucket applied to every route unless overridden with @Throttle.
       { name: 'default', ttl: 60_000, limit: 100 },
