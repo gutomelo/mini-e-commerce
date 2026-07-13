@@ -16,6 +16,10 @@ import { ProductsController } from './products.controller';
  * `CategoryRepository` binding for validating `categoryId` on create/update
  * without re-registering the Prisma adapter. `CachePort` is bound globally
  * by `CacheModule` and does not need to be re-imported here.
+ *
+ * `ProductRepository` is exported so `OrdersModule` can reuse the same
+ * `PrismaProductRepository` binding to re-price/validate order line items
+ * without re-registering it.
  */
 @Module({
   imports: [AuthModule, CategoriesModule],
@@ -28,5 +32,6 @@ import { ProductsController } from './products.controller';
     UpdateProductUseCase,
     DeleteProductUseCase,
   ],
+  exports: [ProductRepository],
 })
 export class ProductsModule {}

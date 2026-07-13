@@ -10,6 +10,7 @@ import { AuthModule } from './presentation/auth/auth.module';
 import { UsersModule } from './presentation/users/users.module';
 import { CategoriesModule } from './presentation/categories/categories.module';
 import { ProductsModule } from './presentation/products/products.module';
+import { OrdersModule } from './presentation/orders/orders.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ProductsModule } from './presentation/products/products.module';
     UsersModule,
     CategoriesModule,
     ProductsModule,
+    OrdersModule,
     ThrottlerModule.forRoot([
       // Default bucket applied to every route unless overridden with @Throttle.
       { name: 'default', ttl: 60_000, limit: 100 },
