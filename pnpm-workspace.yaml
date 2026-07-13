@@ -14,6 +14,9 @@ allowBuilds:
   '@parcel/watcher': false
   # Downloads the schema engine binary used by `prisma migrate` (apps/api).
   '@prisma/engines': true
+  # Telemetry/analytics install script pulled in transitively; no build output
+  # any app depends on, so it's safe to skip.
+  '@scarf/scarf': false
   # node-gyp-build install hook; resolves the prebuilt binary shipped in the
   # tarball (glibc and musl), no compilation needed (apps/api).
   bcrypt: true
