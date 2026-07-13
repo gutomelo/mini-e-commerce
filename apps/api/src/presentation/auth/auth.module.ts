@@ -25,6 +25,8 @@ import { RolesGuard } from './guards/roles.guard';
  * `JwtAuthGuard` and `RolesGuard` are exported so other feature modules
  * (users, products, categories) can apply `@UseGuards(JwtAuthGuard, RolesGuard)`
  * and `@Roles(...)` without re-implementing token verification.
+ * `UserRepository` is exported so `UsersModule` can reuse the same
+ * `PrismaUserRepository` binding without re-registering it.
  */
 @Module({
   imports: [JwtModule.register({})],
@@ -41,6 +43,6 @@ import { RolesGuard } from './guards/roles.guard';
     JwtAuthGuard,
     RolesGuard,
   ],
-  exports: [TokenServicePort, JwtAuthGuard, RolesGuard],
+  exports: [UserRepository, TokenServicePort, JwtAuthGuard, RolesGuard],
 })
 export class AuthModule {}
