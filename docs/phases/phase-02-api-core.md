@@ -9,8 +9,8 @@ Turn `apps/api` into the real API Gateway/BFF core: Clean Architecture layering,
 
 ## Prerequisites
 
-- [ ] Phase 1 is `Done` in [ROADMAP.md](../ROADMAP.md)
-- [ ] Spec for this phase is `Approved`
+- [x] Phase 1 is `Done` in [ROADMAP.md](../ROADMAP.md)
+- [x] Spec for this phase is `Approved`
 
 ## Tasks
 
