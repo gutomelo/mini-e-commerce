@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound, redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import type { ReactElement } from 'react';
 
 import { OrderLineItems } from '@/app/_components/order-line-items';
-import { ApiError } from '@/data-access/http-client';
-import { getOrder, type Order } from '@/data-access/orders';
+import { getOrder } from '@/data-access/orders';
+import { withOrderErrorHandling } from '@/lib/order-access';
 import { getAccessToken } from '@/lib/session';
 
 export const metadata: Metadata = {
@@ -14,24 +14,6 @@ export const metadata: Metadata = {
 
 interface ConfirmationPageProps {
   params: Promise<{ id: string }>;
-}
-
-async function loadOrder(id: string): Promise<Order> {
-  try {
-    return await getOrder(id);
-  } catch (error) {
-    if (error instanceof ApiError && error.statusCode === 404) {
-      notFound();
-    }
-    if (error instanceof ApiError && error.statusCode === 401) {
-      // See the identical comment in `app/orders/[id]/page.tsx`: a silent
-      // refresh that fails here means the session is genuinely
-      // unrecoverable, not just a transient hiccup — redirect rather than
-      // crash on an unhandled 401.
-      redirect('/login');
-    }
-    throw error;
-  }
 }
 
 /**
@@ -52,7 +34,7 @@ export default async function CheckoutConfirmationPage({
   }
 
   const { id } = await params;
-  const order = await loadOrder(id);
+  const order = await withOrderErrorHandling(() => getOrder(id));
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-8">

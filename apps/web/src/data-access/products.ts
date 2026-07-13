@@ -1,5 +1,5 @@
 import type { ListResponse, SingleResponse } from '@mini-e-commerce/types';
-import { publicFetch } from './http-client';
+import { publicFetch, toQueryString } from './http-client';
 
 export interface Product {
   id: string;
@@ -22,17 +22,6 @@ export interface ListProductsQuery {
   minPrice?: number;
   maxPrice?: number;
   sort?: string;
-}
-
-function toQueryString(query: object): string {
-  const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(query)) {
-    if (value !== undefined) {
-      params.set(key, String(value));
-    }
-  }
-  const serialized = params.toString();
-  return serialized.length > 0 ? `?${serialized}` : '';
 }
 
 /** `GET /api/v1/products` — public, cached, paginated, filterable. */

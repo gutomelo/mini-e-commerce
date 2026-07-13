@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateOrderUseCase } from '../../application/orders/use-cases/create-order.use-case';
 import { GetOrderUseCase } from '../../application/orders/use-cases/get-order.use-case';
@@ -49,7 +58,7 @@ export class OrdersController {
   @ApiOperation({ summary: "Get one of the authenticated user's own orders with line items" })
   async getOne(
     @CurrentUser() user: AccessTokenPayload,
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
   ): Promise<SingleResponse<OrderOutput>> {
     const order = await this.getOrderUseCase.execute(id, user.sub);
     return { data: order };

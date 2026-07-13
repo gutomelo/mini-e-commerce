@@ -40,6 +40,18 @@ interface RequestOptions extends Omit<RequestInit, 'body'> {
   body?: unknown;
 }
 
+/** Serializes a plain query-param object into a `?a=1&b=2` suffix (empty string if all values are undefined). */
+export function toQueryString(query: object): string {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (value !== undefined) {
+      params.set(key, String(value));
+    }
+  }
+  const serialized = params.toString();
+  return serialized.length > 0 ? `?${serialized}` : '';
+}
+
 async function parseJsonBody(response: Response): Promise<unknown> {
   const text = await response.text();
   return text.length > 0 ? JSON.parse(text) : undefined;

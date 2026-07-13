@@ -12,6 +12,11 @@ import { CategoriesModule } from './presentation/categories/categories.module';
 import { ProductsModule } from './presentation/products/products.module';
 import { OrdersModule } from './presentation/orders/orders.module';
 
+function resolveAuthThrottleLimit(): number {
+  const raw = Number(process.env.AUTH_THROTTLE_LIMIT);
+  return Number.isFinite(raw) && raw >= 0 ? raw : 10;
+}
+
 @Module({
   imports: [
     LoggerModule,
@@ -33,7 +38,7 @@ import { OrdersModule } from './presentation/orders/orders.module';
       // same loopback address — can raise it for its own spawned API
       // instance without changing prod/dev behavior or the API's own
       // `test:e2e` suite, which never sets this variable.
-      { name: 'auth', ttl: 60_000, limit: Number(process.env.AUTH_THROTTLE_LIMIT) || 10 },
+      { name: 'auth', ttl: 60_000, limit: resolveAuthThrottleLimit() },
     ]),
   ],
   controllers: [HealthController],

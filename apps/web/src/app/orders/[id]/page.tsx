@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound, redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import type { ReactElement } from 'react';
 
 import { OrderLineItems } from '@/app/_components/order-line-items';
-import { ApiError } from '@/data-access/http-client';
-import { getOrder, type Order } from '@/data-access/orders';
+import { getOrder } from '@/data-access/orders';
+import { withOrderErrorHandling } from '@/lib/order-access';
 import { getAccessToken } from '@/lib/session';
 
 export const metadata: Metadata = {
@@ -24,25 +24,6 @@ function formatOrderDate(createdAt: string): string {
   });
 }
 
-async function loadOrder(id: string): Promise<Order> {
-  try {
-    return await getOrder(id);
-  } catch (error) {
-    if (error instanceof ApiError && error.statusCode === 404) {
-      notFound();
-    }
-    if (error instanceof ApiError && error.statusCode === 401) {
-      // `authFetch` already tried a silent refresh and gave up (e.g. the
-      // refresh token itself was rejected — expired, or already rotated
-      // away by an earlier refresh this session never got to persist, since
-      // cookie writes from a Server Component render are a no-op). Bounce
-      // to `/login` instead of letting the page crash on an unhandled 401.
-      redirect('/login');
-    }
-    throw error;
-  }
-}
-
 /**
  * Single order detail page — auth-gated, same pattern as `/checkout`.
  * `getOrder` is scoped server-side to the authenticated user, so another
@@ -57,7 +38,7 @@ export default async function OrderDetailPage({
   }
 
   const { id } = await params;
-  const order = await loadOrder(id);
+  const order = await withOrderErrorHandling(() => getOrder(id));
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-8">

@@ -1,5 +1,5 @@
 import type { ListResponse, SingleResponse } from '@mini-e-commerce/types';
-import { authFetch } from './http-client';
+import { authFetch, toQueryString } from './http-client';
 
 export interface OrderItem {
   productId: string;
@@ -31,17 +31,6 @@ export interface CreateOrderInput {
 export interface ListOrdersQuery {
   page?: number;
   limit?: number;
-}
-
-function toQueryString(query: object): string {
-  const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(query)) {
-    if (value !== undefined) {
-      params.set(key, String(value));
-    }
-  }
-  const serialized = params.toString();
-  return serialized.length > 0 ? `?${serialized}` : '';
 }
 
 /** `POST /api/v1/orders` — requires authentication. */
