@@ -22,7 +22,7 @@ Turn `apps/api` into the real API Gateway/BFF core: Clean Architecture layering,
 - [x] Auth module (Clean Architecture): register/login/refresh/logout use cases, bcrypt hasher adapter, JWT token service, hashed refresh-token persistence with rotation and revocation, `JwtAuthGuard` + `RolesGuard`, stricter throttle (10 req/min) on auth routes, unit tests for the four use cases (owner: nestjs-developer)
 - [x] Users module: `GET /api/v1/users/me` + unit test (owner: nestjs-developer)
 - [x] Categories module: public cached list, ADMIN-only create/update/delete with cache invalidation, unit tests (owner: nestjs-developer)
-- [ ] Products module: public cached list (`page`, `limit`, `search`, `category`, `minPrice`, `maxPrice`, `sort`) and detail by id or slug, ADMIN-only create/update/soft-delete with cache invalidation, prices in integer cents, unit tests (owner: nestjs-developer)
+- [x] Products module: public cached list (`page`, `limit`, `search`, `category`, `minPrice`, `maxPrice`, `sort`) and detail by id or slug, ADMIN-only create/update/soft-delete with cache invalidation, prices in integer cents, unit tests (owner: nestjs-developer)
 - [ ] E2E suite against a dedicated test database + local redis: full auth flow with refresh rotation (reused refresh token rejected), RBAC 403/201, pagination + filters, cache hit + invalidation, throttling 429 (owner: nestjs-developer)
 - [ ] Update `apps/api/README.md` (endpoints, env vars, Prisma/seed workflow, Swagger) and the root README service table if needed (owner: main)
 
