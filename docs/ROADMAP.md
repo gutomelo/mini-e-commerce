@@ -11,7 +11,7 @@ A phase may start only when the previous phase is `Done` (blocking gate enforced
 | 1   | Walking Skeleton               | [walking skeleton](specs/2026-07-11-walking-skeleton.md)           | [phase-01](phases/phase-01-walking-skeleton.md)    | Done        |
 | 2   | API Core (NestJS)              | [api core](specs/2026-07-12-api-core.md)                           | [phase-02](phases/phase-02-api-core.md)            | Done        |
 | 3   | Storefront (Next.js)           | [storefront](specs/2026-07-13-storefront.md)                       | [phase-03](phases/phase-03-storefront.md)          | Done        |
-| 4   | Inventory Service (Go)         | —                                                                  | —                                                  | Not Started |
+| 4   | Inventory Service (Go)         | [inventory service](specs/2026-07-13-inventory-service.md)         | —                                                  | Not Started |
 | 5   | Payment Service (Spring Boot)  | —                                                                  | —                                                  | Not Started |
 | 6   | Event-Driven Integration (E2E) | —                                                                  | —                                                  | Not Started |
 | 7   | Admin Panel (Angular)          | —                                                                  | —                                                  | Not Started |
