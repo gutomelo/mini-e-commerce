@@ -55,6 +55,7 @@ describe('RefreshTokensUseCase', () => {
     tokenService.verifyRefreshToken.mockReturnValue({ sub: user.id, jti: 'jti-1' });
     tokenService.hashRefreshToken.mockReturnValueOnce('hashed-old-token');
     refreshTokenRepository.findByTokenHash.mockResolvedValue(activeStoredToken);
+    refreshTokenRepository.revoke.mockResolvedValue(true);
     userRepository.findById.mockResolvedValue(user);
     tokenService.generateAccessToken.mockReturnValue('new-access-token');
     const newExpiresAt = new Date(Date.now() + 7 * 86_400_000);
@@ -126,5 +127,21 @@ describe('RefreshTokensUseCase', () => {
     await expect(useCase.execute({ refreshToken: 'unknown-token' })).rejects.toBeInstanceOf(
       UnauthorizedError,
     );
+  });
+
+  it('rejects when a concurrent request already revoked the token (atomic revoke lost the race)', async () => {
+    tokenService.verifyRefreshToken.mockReturnValue({ sub: user.id, jti: 'jti-1' });
+    tokenService.hashRefreshToken.mockReturnValue('hashed-old-token');
+    refreshTokenRepository.findByTokenHash.mockResolvedValue(activeStoredToken);
+    userRepository.findById.mockResolvedValue(user);
+    // Simulates another concurrent request winning the atomic
+    // `UPDATE ... WHERE revokedAt IS NULL` race first.
+    refreshTokenRepository.revoke.mockResolvedValue(false);
+
+    await expect(useCase.execute({ refreshToken: 'old-refresh-token' })).rejects.toBeInstanceOf(
+      UnauthorizedError,
+    );
+
+    expect(refreshTokenRepository.create).not.toHaveBeenCalled();
   });
 });

@@ -50,9 +50,17 @@ export class RefreshTokensUseCase {
       throw new UnauthorizedError('Invalid or expired refresh token');
     }
 
-    // Rotation: revoke the presented token before issuing a new one so a
-    // concurrent replay of the same token cannot slip through.
-    await this.refreshTokenRepository.revoke(stored.id);
+    // Rotation: atomically revoke the presented token before issuing a new
+    // one. `revoke` only reports success if this call is the one that
+    // actually flipped `revokedAt` — the earlier `stored.revokedAt` check
+    // above is best-effort only and can't prevent two concurrent requests
+    // both reading the row before either writes to it. This atomic
+    // check-and-set is what actually stops a stolen token from being
+    // replayed twice under a race.
+    const revoked = await this.refreshTokenRepository.revoke(stored.id);
+    if (!revoked) {
+      throw new UnauthorizedError('Refresh token has already been used or revoked');
+    }
 
     const accessToken = this.tokenService.generateAccessToken({
       sub: user.id,

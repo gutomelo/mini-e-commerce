@@ -40,7 +40,10 @@ export class PrismaCategoryRepository implements CategoryRepository {
   }
 
   async countProductsByCategory(id: string): Promise<number> {
-    return this.prisma.product.count({ where: { categoryId: id } });
+    // Only active products count against deletion — a category whose
+    // remaining products are all soft-deleted is otherwise indistinguishable
+    // from an empty one everywhere else in the API.
+    return this.prisma.product.count({ where: { categoryId: id, isActive: true } });
   }
 }
 

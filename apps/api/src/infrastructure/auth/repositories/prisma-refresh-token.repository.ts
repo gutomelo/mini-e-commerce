@@ -18,11 +18,16 @@ export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
     return record ? toDomain(record) : null;
   }
 
-  async revoke(id: string): Promise<void> {
-    await this.prisma.refreshToken.update({
-      where: { id },
+  async revoke(id: string): Promise<boolean> {
+    // Conditional update (`revokedAt: null` in the WHERE clause) makes this
+    // atomic at the database level: if two requests race to revoke the same
+    // token, only one `updateMany` call affects a row, so only one caller
+    // can proceed to mint a new token pair.
+    const { count } = await this.prisma.refreshToken.updateMany({
+      where: { id, revokedAt: null },
       data: { revokedAt: new Date() },
     });
+    return count > 0;
   }
 
   async revokeAllForUser(userId: string): Promise<void> {

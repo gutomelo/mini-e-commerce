@@ -17,6 +17,16 @@ export interface JwtConfig {
 }
 
 export function resolveJwtConfig(): JwtConfig {
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  if (isProduction && (!process.env.JWT_ACCESS_SECRET || !process.env.JWT_REFRESH_SECRET)) {
+    // Never silently sign tokens with the publicly-known dev defaults in
+    // production — fail startup instead of issuing forgeable tokens.
+    throw new Error(
+      'JWT_ACCESS_SECRET and JWT_REFRESH_SECRET must be set in production; refusing to fall back to development defaults.',
+    );
+  }
+
   return {
     accessSecret: process.env.JWT_ACCESS_SECRET ?? DEFAULT_JWT_ACCESS_SECRET,
     refreshSecret: process.env.JWT_REFRESH_SECRET ?? DEFAULT_JWT_REFRESH_SECRET,
