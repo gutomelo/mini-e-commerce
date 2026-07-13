@@ -42,13 +42,17 @@ Turn `apps/web` into the real customer-facing storefront: registration/login wit
 
 ## Verification
 
-- [ ] `pnpm install` — completes without errors
-- [ ] `pnpm turbo run build lint test` — passes for all packages and apps, including new api order unit tests
-- [ ] `pnpm --filter api test` — unit tests pass (register/login/refresh unaffected; new order use-case tests pass)
-- [ ] `docker compose up -d --wait postgres redis` — infra healthy for the migration
-- [ ] `DATABASE_URL=postgresql://postgres:postgres@localhost:5433/mini_ecommerce pnpm --filter api exec prisma migrate deploy` — orders migration applies, exit 0
-- [ ] `docker compose up -d --wait` — full stack healthy, including the storefront serving real pages
-- [ ] `curl -fsS http://localhost:8080/products | grep -qi "Wireless Bluetooth Headphones"` — catalog page renders seeded products through the reverse proxy
-- [ ] `curl -fsS -o /dev/null -w "%{http_code}" http://localhost:8080/api/v1/orders` — returns `401` (orders require auth)
-- [ ] `pnpm --filter web run test:e2e` — Playwright suite passes: auth cookie flow, silent refresh, catalog filters, cart mutations, checkout (including tampered-cart handling), order history, cross-user order isolation
-- [ ] `docker compose down -v` — exits 0 (clean teardown)
+- [x] `pnpm install` — completes without errors
+- [x] `pnpm turbo run build lint test` — passes for all packages and apps, including new api order unit tests
+- [x] `pnpm --filter api test` — unit tests pass (register/login/refresh unaffected; new order use-case tests pass)
+- [x] `docker compose up -d --wait postgres redis` — infra healthy for the migration
+- [x] `DATABASE_URL=postgresql://postgres:postgres@localhost:5433/mini_ecommerce pnpm --filter api exec prisma migrate deploy` — orders migration applies, exit 0
+- [x] `docker compose up -d --wait` — full stack healthy, including the storefront serving real pages
+- [x] `curl -fsS http://localhost:8080/products | grep -qi "Wireless Bluetooth Headphones"` — catalog page renders seeded products through the reverse proxy
+- [x] `curl -fsS -o /dev/null -w "%{http_code}" http://localhost:8080/api/v1/orders` — returns `401` (orders require auth)
+- [x] `pnpm --filter web run test:e2e` — Playwright suite passes: auth cookie flow, silent refresh, catalog filters, cart mutations, checkout (including tampered-cart handling), order history, cross-user order isolation
+- [x] `docker compose down -v` — exits 0 (clean teardown)
+
+## Verification notes
+
+Ran `docker compose build` explicitly before the full-stack health check (per the lesson from Phase 2's verification, where a stale pre-existing image masked a real bug) — both `api` and `web` images were rebuilt against the final code, then `docker compose up -d --wait` and the full Playwright suite (12/12) ran against those fresh images. No issues found this time; every check passed on the first attempt.
