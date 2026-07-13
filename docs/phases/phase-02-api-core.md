@@ -40,15 +40,19 @@ Turn `apps/api` into the real API Gateway/BFF core: Clean Architecture layering,
 
 ## Verification
 
-- [ ] `pnpm install` — completes without errors
-- [ ] `pnpm turbo run build lint` — passes for all packages and apps
-- [ ] `pnpm --filter api test` — unit tests pass
-- [ ] `docker compose up -d --wait postgres redis` — infra healthy for the e2e run
-- [ ] `DATABASE_URL=postgresql://postgres:postgres@localhost:5433/mini_ecommerce pnpm --filter api exec prisma migrate deploy` — migrations apply, exit 0
-- [ ] `pnpm --filter api run test:e2e` — e2e suite passes (auth rotation, RBAC, pagination/filters, cache invalidation, 429)
-- [ ] `docker compose up -d --wait` — full stack healthy including redis and migrated api
-- [ ] `curl -fsS http://localhost:8080/api/health` — returns `{"status":"ok","service":"api"}`
-- [ ] `curl -fsS -o /dev/null -w "%{http_code}" http://localhost:8080/api/docs` — returns `200`
-- [ ] `curl -fsS http://localhost:8080/api/v1/products` — returns the list envelope with `data` and `meta` (seeded catalog)
-- [ ] `curl -fsS -o /dev/null -w "%{http_code}" -X POST -H "Content-Type: application/json" -d '{"name":"x","slug":"x","description":"x","priceCents":1,"categoryId":"00000000-0000-0000-0000-000000000000"}' http://localhost:8080/api/v1/products` — returns `401` (write requires auth)
-- [ ] `docker compose down -v` — exits 0 (clean teardown)
+- [x] `pnpm install` — completes without errors
+- [x] `pnpm turbo run build lint` — passes for all packages and apps
+- [x] `pnpm --filter api test` — unit tests pass
+- [x] `docker compose up -d --wait postgres redis` — infra healthy for the e2e run
+- [x] `DATABASE_URL=postgresql://postgres:postgres@localhost:5433/mini_ecommerce pnpm --filter api exec prisma migrate deploy` — migrations apply, exit 0
+- [x] `pnpm --filter api run test:e2e` — e2e suite passes (auth rotation, RBAC, pagination/filters, cache invalidation, 429)
+- [x] `docker compose up -d --wait` — full stack healthy including redis and migrated api
+- [x] `curl -fsS http://localhost:8080/api/health` — returns `{"status":"ok","service":"api"}`
+- [x] `curl -fsS -o /dev/null -w "%{http_code}" http://localhost:8080/api/docs` — returns `200`
+- [x] `curl -fsS http://localhost:8080/api/v1/products` — returns the list envelope with `data` and `meta` (seeded catalog)
+- [x] `curl -fsS -o /dev/null -w "%{http_code}" -X POST -H "Content-Type: application/json" -d '{"name":"x","slug":"x","description":"x","priceCents":1,"categoryId":"00000000-0000-0000-0000-000000000000"}' http://localhost:8080/api/v1/products` — returns `401` (write requires auth)
+- [x] `docker compose down -v` — exits 0 (clean teardown)
+
+## Verification notes
+
+- The full-stack check first failed: the running `api` container image was 21 hours old (built during Phase 1, before any Phase 2 code existed), so `/api/docs` 404'd. Rebuilding (`docker compose build api`) surfaced a real Dockerfile bug: the runner stage's `pnpm install --prod` symlinks `@mini-e-commerce/shared`/`@mini-e-commerce/types` as workspace packages but never runs their build script, so `dist/index.js` was missing and the container crashed on boot (`MODULE_NOT_FOUND`). Fixed by copying each package's builder-stage `dist/` output into the runner stage in `apps/api/Dockerfile`. Rebuilt and re-ran every verification command from `docker compose up -d --wait postgres redis` onward; all passed.
