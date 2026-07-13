@@ -5,6 +5,9 @@
   "description": "Thin Turborepo wrapper for the Go inventory service",
   "scripts": {
     "build": "go build ./...",
-    "dev": "go run ./cmd/server"
+    "dev": "go run ./cmd/server",
+    "lint": "test -z \"$(gofmt -l .)\" && go vet ./...",
+    "test": "go test ./...",
+    "migrate": "go run ./cmd/migrate"
   }
 }
