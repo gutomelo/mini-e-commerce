@@ -6,12 +6,14 @@ import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { LoggerModule } from './infrastructure/logging/logger.module';
 import { CacheModule } from './infrastructure/cache/cache.module';
 import { GlobalExceptionFilter } from './presentation/filters/global-exception.filter';
+import { AuthModule } from './presentation/auth/auth.module';
 
 @Module({
   imports: [
     LoggerModule,
     PrismaModule,
     CacheModule,
+    AuthModule,
     ThrottlerModule.forRoot([
       // Default bucket applied to every route unless overridden with @Throttle.
       { name: 'default', ttl: 60_000, limit: 100 },
