@@ -18,3 +18,15 @@ export async function getCart(): Promise<Cart> {
   const store = await cookies();
   return parseCart(store.get(CART_COOKIE_NAME)?.value);
 }
+
+/**
+ * Clears the `cart` cookie. Server-only (writes cookies), so it lives here
+ * rather than in the isomorphic `cart.ts` — called from the checkout Server
+ * Action after an order is successfully placed. Never called on a rejected
+ * checkout (e.g. a stale/tampered cart item), so the shopper can go fix the
+ * offending item in `/cart` and retry.
+ */
+export async function clearCartCookie(): Promise<void> {
+  const store = await cookies();
+  store.delete(CART_COOKIE_NAME);
+}
