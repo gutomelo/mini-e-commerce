@@ -24,7 +24,7 @@ Turn `apps/api` into the real API Gateway/BFF core: Clean Architecture layering,
 - [x] Categories module: public cached list, ADMIN-only create/update/delete with cache invalidation, unit tests (owner: nestjs-developer)
 - [x] Products module: public cached list (`page`, `limit`, `search`, `category`, `minPrice`, `maxPrice`, `sort`) and detail by id or slug, ADMIN-only create/update/soft-delete with cache invalidation, prices in integer cents, unit tests (owner: nestjs-developer)
 - [x] E2E suite against a dedicated test database + local redis: full auth flow with refresh rotation (reused refresh token rejected), RBAC 403/201, pagination + filters, cache hit + invalidation, throttling 429 (owner: nestjs-developer)
-- [ ] Update `apps/api/README.md` (endpoints, env vars, Prisma/seed workflow, Swagger) and the root README service table if needed (owner: main)
+- [x] Update `apps/api/README.md` (endpoints, env vars, Prisma/seed workflow, Swagger) and the root README service table if needed (owner: main)
 
 ## Acceptance Criteria
 
