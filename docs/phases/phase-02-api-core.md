@@ -14,7 +14,7 @@ Turn `apps/api` into the real API Gateway/BFF core: Clean Architecture layering,
 
 ## Tasks
 
-- [x] Add `redis` service to docker-compose (`redis:alpine`, healthcheck, host port 6379); give `api` the `DATABASE_URL`, `REDIS_URL`, and JWT env vars with compose defaults and `depends_on` healthy postgres + redis; update `.env.example` (owner: main)
+- [x] Add `redis` service to docker-compose (`redis:alpine`, healthcheck, host port 6380 — 6379 is taken by the host's redis); give `api` the `DATABASE_URL`, `REDIS_URL`, and JWT env vars with compose defaults and `depends_on` healthy postgres + redis; update `.env.example` (owner: main)
 - [x] Add shared API contract types to `packages/types`: `PaginationMeta`, `ListResponse<T>`, `SingleResponse<T>`, `ErrorResponse` (owner: main)
 - [ ] Prisma setup in `apps/api`: schema (`User`, `RefreshToken`, `Category`, `Product` per spec), initial committed migration, `PrismaService`, seed script (admin user + 3 categories / ~12 products), api Dockerfile runs `prisma migrate deploy` before starting (owner: nestjs-developer)
 - [ ] API foundations: URI versioning `/api/v1` (health stays `/api/health`), global `ValidationPipe` (whitelist + transform), success/error envelopes, global exception filter (no stack traces, domain-error mapping), correlation ID middleware (accept `x-correlation-id` or generate via `@mini-e-commerce/shared`), nestjs-pino structured JSON logging, Swagger at `/api/docs`, global throttling 100 req/min (owner: nestjs-developer)
