@@ -12,8 +12,15 @@ overrides:
 # the apps/web scaffold; the rest from the apps/admin Angular toolchain).
 allowBuilds:
   '@parcel/watcher': false
+  # Downloads the schema engine binary used by `prisma migrate` (apps/api).
+  '@prisma/engines': true
+  # node-gyp-build install hook; resolves the prebuilt binary shipped in the
+  # tarball (glibc and musl), no compilation needed (apps/api).
+  bcrypt: true
   esbuild: false
   lmdb: false
   msgpackr-extract: false
+  # Preinstall Node.js version check for the Prisma CLI (apps/api).
+  prisma: true
   sharp: false
   unrs-resolver: false

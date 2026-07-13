@@ -23,9 +23,24 @@ FROM base AS runner
 WORKDIR /repo
 ENV NODE_ENV=production
 ENV PORT=3001
+# The Prisma schema engine (used by `prisma migrate deploy`) links against
+# OpenSSL, which the alpine base image does not ship by default.
+RUN apk add --no-cache openssl
 COPY --from=pruner /repo/out/json/ .
-RUN pnpm install --frozen-lockfile --prod --ignore-scripts
+# --ignore-scripts skips the root husky prepare hook; the packages that do
+# need their install scripts (Prisma engine download, bcrypt prebuilt binary
+# resolution) are rebuilt explicitly right after.
+RUN pnpm install --frozen-lockfile --prod --ignore-scripts \
+  && pnpm rebuild -r @prisma/engines bcrypt
+# Prisma schema, migrations, and seed (run by the entrypoint on boot)
+COPY --from=pruner /repo/out/full/apps/api/prisma ./apps/api/prisma
+COPY --from=pruner /repo/out/full/apps/api/prisma.config.ts ./apps/api/prisma.config.ts
+# Generated Prisma client sources, imported by the tsx-executed seed script
+COPY --from=builder /repo/apps/api/src/generated ./apps/api/src/generated
+# The seed imports the database-url resolver from src
+COPY --from=builder /repo/apps/api/src/infrastructure/prisma/database-url.ts ./apps/api/src/infrastructure/prisma/database-url.ts
 COPY --from=builder --chown=node:node /repo/apps/api/dist ./apps/api/dist
+COPY --chmod=755 apps/api/docker-entrypoint.sh ./apps/api/docker-entrypoint.sh
 USER node
 EXPOSE 3001
-CMD ["node", "apps/api/dist/main.js"]
+ENTRYPOINT ["/repo/apps/api/docker-entrypoint.sh"]
