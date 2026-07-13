@@ -4,12 +4,14 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { HealthController } from './health.controller';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { LoggerModule } from './infrastructure/logging/logger.module';
+import { CacheModule } from './infrastructure/cache/cache.module';
 import { GlobalExceptionFilter } from './presentation/filters/global-exception.filter';
 
 @Module({
   imports: [
     LoggerModule,
     PrismaModule,
+    CacheModule,
     ThrottlerModule.forRoot([
       // Default bucket applied to every route unless overridden with @Throttle.
       { name: 'default', ttl: 60_000, limit: 100 },
