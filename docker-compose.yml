@@ -80,6 +80,18 @@ services:
   inventory:
     build:
       context: apps/inventory
+    environment:
+      INVENTORY_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/mini_ecommerce_inventory
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-dev-internal-api-key-change-me}
+      API_BASE_URL: http://api:3001
+      QSTASH_TOKEN: ${QSTASH_TOKEN:-change-me}
+      QSTASH_CURRENT_SIGNING_KEY: ${QSTASH_CURRENT_SIGNING_KEY:-change-me}
+      QSTASH_NEXT_SIGNING_KEY: ${QSTASH_NEXT_SIGNING_KEY:-change-me}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      api:
+        condition: service_healthy
     healthcheck:
       test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:8081/health']
       interval: 10s
