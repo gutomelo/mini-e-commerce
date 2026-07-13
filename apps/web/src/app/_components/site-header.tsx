@@ -27,6 +27,11 @@ export async function SiteHeader(): Promise<ReactElement> {
         <Link href="/products" className="text-sm text-muted-foreground hover:text-foreground">
           Products
         </Link>
+        {accessToken ? (
+          <Link href="/orders" className="text-sm text-muted-foreground hover:text-foreground">
+            Orders
+          </Link>
+        ) : null}
       </div>
 
       <div className="flex items-center gap-4">

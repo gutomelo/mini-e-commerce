@@ -9,11 +9,19 @@ import { getOrder, type Order } from '@/data-access/orders';
 import { getAccessToken } from '@/lib/session';
 
 export const metadata: Metadata = {
-  title: 'Order confirmed',
+  title: 'Order details',
 };
 
-interface ConfirmationPageProps {
+interface OrderDetailPageProps {
   params: Promise<{ id: string }>;
+}
+
+function formatOrderDate(createdAt: string): string {
+  return new Date(createdAt).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
 }
 
 async function loadOrder(id: string): Promise<Order> {
@@ -28,17 +36,13 @@ async function loadOrder(id: string): Promise<Order> {
 }
 
 /**
- * Standalone confirmation page shown right after checkout. Shows everything
- * needed to independently verify a successful checkout (order id, line
- * items, total) and links into full order history (`/orders`).
- *
- * Requires authentication like every other order-scoped page — `getOrder`
- * is scoped server-side to the authenticated user, so this also doubles as
- * protection against viewing another customer's order confirmation.
+ * Single order detail page — auth-gated, same pattern as `/checkout`.
+ * `getOrder` is scoped server-side to the authenticated user, so another
+ * customer's order id 404s here rather than leaking its existence.
  */
-export default async function CheckoutConfirmationPage({
+export default async function OrderDetailPage({
   params,
-}: ConfirmationPageProps): Promise<ReactElement> {
+}: OrderDetailPageProps): Promise<ReactElement> {
   const accessToken = await getAccessToken();
   if (!accessToken) {
     redirect('/login');
@@ -50,22 +54,18 @@ export default async function CheckoutConfirmationPage({
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-8">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Order placed!</h1>
+        <Link href="/orders" className="text-sm font-medium underline underline-offset-4">
+          Back to orders
+        </Link>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Order <span className="font-mono">{order.id}</span>
+        </h1>
         <p className="text-sm text-muted-foreground">
-          Order <span className="font-mono">{order.id}</span> has been placed successfully.
+          Placed {formatOrderDate(order.createdAt)} · {order.status}
         </p>
       </div>
 
       <OrderLineItems items={order.items} totalCents={order.totalCents} />
-
-      <div className="flex items-center gap-4">
-        <Link href="/products" className="text-sm font-medium underline underline-offset-4">
-          Continue shopping
-        </Link>
-        <Link href="/orders" className="text-sm font-medium underline underline-offset-4">
-          View all orders
-        </Link>
-      </div>
     </div>
   );
 }
