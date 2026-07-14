@@ -39,15 +39,24 @@ Turn `apps/inventory` into the real inventory bounded context: a stock domain wi
 
 ## Verification
 
-- [ ] `pnpm install` — completes without errors
-- [ ] `pnpm turbo run build lint test --filter=inventory` — passes (`go build`, `gofmt -l .` clean, `go vet ./...`, `go test ./...`)
-- [ ] `(cd apps/inventory && gofmt -l .)` — no output
-- [ ] `(cd apps/inventory && go vet ./...)` — exits 0
-- [ ] `(cd apps/inventory && go test ./... -v)` — all tests pass, including idempotent-redelivery, invalid-signature-rejection, and clamp-at-zero cases
-- [ ] `docker compose up -d --wait postgres api` — infra healthy (postgres + api, the latter needed for the seed command's slug→id lookup)
-- [ ] `docker compose build inventory` — image builds successfully
-- [ ] `docker compose up -d --wait` — full stack healthy; inventory migrates and seeds automatically on start
-- [ ] `! docker compose exec -T inventory wget -q -O /dev/null http://127.0.0.1:8081/internal/v1/stock/00000000-0000-0000-0000-000000000000` — exits non-zero (rejected: missing `X-Internal-Api-Key`)
-- [ ] `PRODUCT_ID=$(curl -fsS "http://localhost:8080/api/v1/products?search=Wireless" | python3 -c "import json,sys;print(json.load(sys.stdin)['data'][0]['id'])") && docker compose exec -T inventory wget -qO- --header="X-Internal-Api-Key: $INTERNAL_API_KEY" "http://127.0.0.1:8081/internal/v1/stock/$PRODUCT_ID"` — returns the seeded stock quantity for that product
-- [ ] `! docker compose ps inventory | grep '0.0.0.0'` — exits 0 (no host port published for the internal service)
-- [ ] `docker compose down -v` — exits 0 (clean teardown)
+- [x] `pnpm install` — completes without errors
+- [x] `pnpm turbo run build lint test --filter=inventory` — passes (`go build`, `gofmt -l .` clean, `go vet ./...`, `go test ./...`)
+- [x] `(cd apps/inventory && gofmt -l .)` — no output
+- [x] `(cd apps/inventory && go vet ./...)` — exits 0
+- [x] `docker compose up -d --wait postgres` (if not already running) then `(cd apps/inventory && INVENTORY_DATABASE_URL=postgresql://postgres:postgres@localhost:5433/mini_ecommerce_inventory_test go run ./cmd/migrate && INVENTORY_DATABASE_URL=postgresql://postgres:postgres@localhost:5433/mini_ecommerce_inventory_test go test ./... -v)` — all tests pass, including the Postgres-backed idempotent-redelivery, invalid-signature-rejection, and clamp-at-zero cases (the original command omitted `INVENTORY_DATABASE_URL`, so those specific cases silently skipped instead of running — fixed during `/verify-phase 4` with the user's confirmation)
+- [x] `docker compose up -d --wait postgres api` — infra healthy (postgres + api, the latter needed for the seed command's slug→id lookup)
+- [x] `docker compose build inventory` — image builds successfully
+- [x] `docker compose up -d --wait` — full stack healthy; inventory migrates and seeds automatically on start
+- [x] `! docker compose exec -T inventory wget -q -O /dev/null http://127.0.0.1:8081/internal/v1/stock/00000000-0000-0000-0000-000000000000` — exits non-zero (rejected: missing `X-Internal-Api-Key`)
+- [x] `INTERNAL_API_KEY=dev-internal-api-key-change-me; PRODUCT_ID=$(curl -fsS "http://localhost:8080/api/v1/products?search=Wireless" | python3 -c "import json,sys;print(json.load(sys.stdin)['data'][0]['id'])") && docker compose exec -T inventory wget -qO- --header="X-Internal-Api-Key: $INTERNAL_API_KEY" "http://127.0.0.1:8081/internal/v1/stock/$PRODUCT_ID"` — returns the seeded stock quantity for that product (the original command referenced `$INTERNAL_API_KEY` with no way for it to ever be set — no `.env` file exists and the checklist never exported it — so it always 401'd; fixed by pinning the same default `docker-compose.yml` itself falls back to, during `/verify-phase 4` with the user's confirmation)
+- [x] `! docker compose ps inventory | grep '0.0.0.0'` — exits 0 (no host port published for the internal service)
+- [x] `docker compose down -v` — exits 0 (clean teardown)
+
+## Verification notes
+
+Two Verification commands as originally written in this checklist had bugs that would have made them silently pass without actually proving what they claimed — both caught and fixed during `/verify-phase 4` with the user's explicit confirmation before editing:
+
+1. The `go test ./... -v` command never set `INVENTORY_DATABASE_URL`, so the Postgres-backed integration tests (idempotent redelivery, invalid-signature rejection, clamp-at-zero) silently skipped instead of running.
+2. The stock-lookup curl/wget command referenced a `$INTERNAL_API_KEY` shell variable that nothing ever set (no `.env` file exists), so it always 401'd.
+
+Both are now pinned to the actual values `docker-compose.yml` itself falls back to, and both were re-run after the fix to confirm they now genuinely pass.
