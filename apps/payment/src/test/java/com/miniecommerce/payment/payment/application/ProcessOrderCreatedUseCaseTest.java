@@ -12,6 +12,7 @@ import com.miniecommerce.payment.payment.application.port.ProcessedEventReposito
 import com.miniecommerce.payment.payment.domain.Payment;
 import com.miniecommerce.payment.payment.domain.PaymentStatus;
 import com.miniecommerce.payment.payment.domain.event.OrderCreatedData;
+import com.miniecommerce.payment.payment.infrastructure.fake.InMemoryEventPublisher;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
