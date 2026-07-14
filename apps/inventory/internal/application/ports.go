@@ -38,12 +38,17 @@ type StockRepository interface {
 // ProcessedEventRepository abstracts the idempotency marker used to make
 // event consumption safe under redelivery.
 type ProcessedEventRepository interface {
-	// IsProcessed reports whether an event with the given correlation ID
-	// has already been recorded as processed.
-	IsProcessed(ctx context.Context, correlationID string) (bool, error)
-
-	// MarkProcessed records the given correlation ID as processed.
-	MarkProcessed(ctx context.Context, correlationID string) error
+	// TryClaim atomically records correlationID as processed and reports
+	// whether this call is the one that claimed it: true if correlationID
+	// was not already recorded (the caller should proceed), false if it was
+	// already present (the caller must treat this as a no-op redelivery).
+	// This must be a single atomic operation at the storage layer — a
+	// separate "is it processed" check followed by a separate "mark it
+	// processed" write would leave a window where two concurrent
+	// deliveries of the same event both observe "not yet processed" and
+	// both proceed, double-applying the event. Implementations exist to
+	// close exactly that window.
+	TryClaim(ctx context.Context, correlationID string) (claimed bool, err error)
 }
 
 // EventPublisher abstracts publishing an outbound event. The signature

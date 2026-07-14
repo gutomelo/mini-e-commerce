@@ -16,6 +16,10 @@ type EventEnvelope[T any] struct {
 	Data          T         `json:"data"`
 }
 
+// OrderCreatedEvent is the EventEnvelope.Event value for an order.created
+// event, the only event this service's QStash webhook currently consumes.
+const OrderCreatedEvent = "order.created"
+
 // OrderCreatedItem is one line item of an order.created event's data payload.
 type OrderCreatedItem struct {
 	ProductID string `json:"productId"`

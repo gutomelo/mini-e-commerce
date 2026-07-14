@@ -108,4 +108,30 @@ func TestConsumeOrderCreatedUseCase_Execute(t *testing.T) {
 			t.Fatalf("published events = %d, want 1 (no second round of publishes)", len(publisher.published))
 		}
 	})
+
+	t.Run("skips a line item with non-positive quantity instead of decrementing", func(t *testing.T) {
+		stockRepo := newFakeStockRepository()
+		stockRepo.rows["product-1"] = &domain.Stock{ProductID: "product-1", Quantity: 10}
+		processedRepo := newFakeProcessedEventRepository()
+		publisher := newFakeEventPublisher()
+		uc := application.NewConsumeOrderCreatedUseCase(stockRepo, processedRepo, publisher)
+
+		envelope := newOrderCreatedEnvelope(
+			"correlation-1",
+			domain.OrderCreatedItem{ProductID: "product-1", Quantity: 0},
+			domain.OrderCreatedItem{ProductID: "product-1", Quantity: -5},
+		)
+
+		if err := uc.Execute(context.Background(), envelope); err != nil {
+			t.Fatalf("Execute() error = %v, want nil", err)
+		}
+
+		if got := stockRepo.rows["product-1"].Quantity; got != 10 {
+			t.Errorf("product-1 quantity = %d, want unchanged 10 (negative delta must never increase stock)", got)
+		}
+
+		if len(publisher.published) != 0 {
+			t.Fatalf("published events = %d, want 0 (nothing decremented)", len(publisher.published))
+		}
+	})
 }

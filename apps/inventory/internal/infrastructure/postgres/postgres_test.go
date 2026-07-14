@@ -168,43 +168,36 @@ func TestPostgresProcessedEventRepository(t *testing.T) {
 	repo := postgres.NewPostgresProcessedEventRepository(db)
 	ctx := context.Background()
 
-	t.Run("IsProcessed is false for an unknown correlation id", func(t *testing.T) {
-		processed, err := repo.IsProcessed(ctx, newTestProductID(t))
+	t.Run("TryClaim claims an unknown correlation id", func(t *testing.T) {
+		claimed, err := repo.TryClaim(ctx, newTestProductID(t))
 		if err != nil {
-			t.Fatalf("IsProcessed() error = %v, want nil", err)
+			t.Fatalf("TryClaim() error = %v, want nil", err)
 		}
 
-		if processed {
-			t.Fatal("IsProcessed() = true, want false")
+		if !claimed {
+			t.Fatal("TryClaim() = false, want true (first claim)")
 		}
 	})
 
-	t.Run("MarkProcessed then IsProcessed reflects reality", func(t *testing.T) {
+	t.Run("TryClaim twice with the same id claims once", func(t *testing.T) {
 		correlationID := newTestProductID(t)
 
-		if err := repo.MarkProcessed(ctx, correlationID); err != nil {
-			t.Fatalf("MarkProcessed() error = %v, want nil", err)
-		}
-
-		processed, err := repo.IsProcessed(ctx, correlationID)
+		first, err := repo.TryClaim(ctx, correlationID)
 		if err != nil {
-			t.Fatalf("IsProcessed() error = %v, want nil", err)
+			t.Fatalf("first TryClaim() error = %v, want nil", err)
 		}
 
-		if !processed {
-			t.Fatal("IsProcessed() = false, want true")
-		}
-	})
-
-	t.Run("MarkProcessed twice with the same id does not error", func(t *testing.T) {
-		correlationID := newTestProductID(t)
-
-		if err := repo.MarkProcessed(ctx, correlationID); err != nil {
-			t.Fatalf("first MarkProcessed() error = %v, want nil", err)
+		if !first {
+			t.Fatal("first TryClaim() = false, want true")
 		}
 
-		if err := repo.MarkProcessed(ctx, correlationID); err != nil {
-			t.Fatalf("second MarkProcessed() error = %v, want nil", err)
+		second, err := repo.TryClaim(ctx, correlationID)
+		if err != nil {
+			t.Fatalf("second TryClaim() error = %v, want nil", err)
+		}
+
+		if second {
+			t.Fatal("second TryClaim() = true, want false (already claimed)")
 		}
 	})
 }

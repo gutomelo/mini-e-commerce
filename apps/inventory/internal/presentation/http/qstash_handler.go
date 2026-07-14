@@ -80,6 +80,23 @@ func (h *QStashHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// This route is currently the only QStash subscription this service
+	// has, but the envelope's event field is part of the contract (per the
+	// spec), so a mismatched event is rejected rather than silently
+	// processed as if it were order.created — this is the check a second
+	// event type sharing this route would otherwise need someone to
+	// remember to add.
+	if envelope.Event != domain.OrderCreatedEvent {
+		slog.Warn(
+			"qstash handler: unexpected event type, ignoring",
+			"event", envelope.Event,
+			"correlationId", envelope.CorrelationID,
+		)
+		writeError(w, http.StatusBadRequest, "unsupported event type")
+
+		return
+	}
+
 	if err := h.consumer.Execute(r.Context(), envelope); err != nil {
 		slog.Error(
 			"qstash handler: consume order.created",

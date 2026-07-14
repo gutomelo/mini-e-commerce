@@ -19,34 +19,29 @@ func NewPostgresProcessedEventRepository(db *sql.DB) *PostgresProcessedEventRepo
 	return &PostgresProcessedEventRepository{db: db}
 }
 
-// IsProcessed reports whether an event with the given correlation ID has
-// already been recorded as processed.
-func (r *PostgresProcessedEventRepository) IsProcessed(ctx context.Context, correlationID string) (bool, error) {
-	const query = `SELECT EXISTS (SELECT 1 FROM processed_events WHERE correlation_id = $1)`
-
-	var exists bool
-
-	if err := r.db.QueryRowContext(ctx, query, correlationID).Scan(&exists); err != nil {
-		return false, fmt.Errorf("check processed state for correlation %q: %w", correlationID, err)
-	}
-
-	return exists, nil
-}
-
-// MarkProcessed records the given correlation ID as processed. Calling it
-// twice with the same id is safe and does not error — the use case's own
-// upfront IsProcessed check should prevent that in practice, but the
-// ON CONFLICT DO NOTHING here is cheap defense in depth.
-func (r *PostgresProcessedEventRepository) MarkProcessed(ctx context.Context, correlationID string) error {
+// TryClaim atomically inserts correlationID into processed_events and
+// reports whether this call performed the insert. A single
+// INSERT ... ON CONFLICT DO NOTHING is what makes this atomic: Postgres
+// serializes concurrent inserts of the same key at the row level, so of
+// two concurrent callers claiming the same correlationID, exactly one
+// gets rows-affected = 1 (claimed) and the other gets 0 (already claimed)
+// — there is no separate read-then-write window for both to race through.
+func (r *PostgresProcessedEventRepository) TryClaim(ctx context.Context, correlationID string) (bool, error) {
 	const query = `
 		INSERT INTO processed_events (correlation_id)
 		VALUES ($1)
 		ON CONFLICT (correlation_id) DO NOTHING
 	`
 
-	if _, err := r.db.ExecContext(ctx, query, correlationID); err != nil {
-		return fmt.Errorf("mark correlation %q processed: %w", correlationID, err)
+	result, err := r.db.ExecContext(ctx, query, correlationID)
+	if err != nil {
+		return false, fmt.Errorf("claim correlation %q: %w", correlationID, err)
 	}
 
-	return nil
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, fmt.Errorf("read rows affected for correlation %q: %w", correlationID, err)
+	}
+
+	return rowsAffected > 0, nil
 }

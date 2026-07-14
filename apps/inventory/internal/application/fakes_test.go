@@ -88,14 +88,14 @@ func newFakeProcessedEventRepository() *fakeProcessedEventRepository {
 	return &fakeProcessedEventRepository{processed: map[string]bool{}}
 }
 
-func (r *fakeProcessedEventRepository) IsProcessed(_ context.Context, correlationID string) (bool, error) {
-	return r.processed[correlationID], nil
-}
+func (r *fakeProcessedEventRepository) TryClaim(_ context.Context, correlationID string) (bool, error) {
+	if r.processed[correlationID] {
+		return false, nil
+	}
 
-func (r *fakeProcessedEventRepository) MarkProcessed(_ context.Context, correlationID string) error {
 	r.processed[correlationID] = true
 
-	return nil
+	return true, nil
 }
 
 // publishedEvent records a single call recorded by fakeEventPublisher.

@@ -98,6 +98,18 @@ func TestQStashHandler(t *testing.T) {
 			wantStatus:    http.StatusInternalServerError,
 			wantExecuted:  1,
 		},
+		{
+			name:      "mismatched event type returns 400 and never executes",
+			signature: "good-signature",
+			body: []byte(`{
+				"event": "some.other.event",
+				"correlationId": "corr-1",
+				"timestamp": "2026-01-01T00:00:00Z",
+				"data": {"orderId": "order-1", "items": [{"productId": "p1", "quantity": 2}]}
+			}`),
+			wantStatus:   http.StatusBadRequest,
+			wantExecuted: 0,
+		},
 	}
 
 	for _, tt := range tests {
