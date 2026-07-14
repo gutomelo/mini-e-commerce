@@ -102,6 +102,17 @@ services:
   payment:
     build:
       context: apps/payment
+    environment:
+      PAYMENT_DATABASE_URL: jdbc:postgresql://postgres:5432/mini_ecommerce_payment?user=${POSTGRES_USER:-postgres}&password=${POSTGRES_PASSWORD:-postgres}
+      INTERNAL_API_KEY: ${PAYMENT_INTERNAL_API_KEY:-dev-payment-internal-api-key-change-me}
+      PAYMENT_GATEWAY_SUCCESS_RATE: ${PAYMENT_GATEWAY_SUCCESS_RATE:-0.9}
+      QSTASH_TOKEN: ${QSTASH_TOKEN:-change-me}
+      QSTASH_CURRENT_SIGNING_KEY: ${QSTASH_CURRENT_SIGNING_KEY:-change-me}
+      QSTASH_NEXT_SIGNING_KEY: ${QSTASH_NEXT_SIGNING_KEY:-change-me}
+      PAYMENT_QSTASH_DESTINATION_URL: ${PAYMENT_QSTASH_DESTINATION_URL:-http://payment:8082/internal/v1/events/qstash}
+    depends_on:
+      postgres:
+        condition: service_healthy
     healthcheck:
       test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:8082/health']
       interval: 10s
