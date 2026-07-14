@@ -87,6 +87,7 @@ services:
       QSTASH_TOKEN: ${QSTASH_TOKEN:-change-me}
       QSTASH_CURRENT_SIGNING_KEY: ${QSTASH_CURRENT_SIGNING_KEY:-change-me}
       QSTASH_NEXT_SIGNING_KEY: ${QSTASH_NEXT_SIGNING_KEY:-change-me}
+      QSTASH_DESTINATION_URL: ${QSTASH_DESTINATION_URL:-http://inventory:8081/internal/v1/events/qstash}
     depends_on:
       postgres:
         condition: service_healthy

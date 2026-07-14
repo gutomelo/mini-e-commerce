@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"log/slog"
@@ -97,9 +98,10 @@ func (h *QStashHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// compile-time checks that the concrete types this package wires up satisfy
-// the small interfaces declared above.
-var (
-	_ signatureVerifier    = (*qstashSignatureVerifierAdapter)(nil)
-	_ orderCreatedConsumer = (*application.ConsumeOrderCreatedUseCase)(nil)
-)
+// compile-time check that *application.ConsumeOrderCreatedUseCase satisfies
+// orderCreatedConsumer. signatureVerifier has no equivalent check here: its
+// concrete implementation (qstash.SignatureVerifier) lives in the
+// infrastructure layer, and this presentation package intentionally does
+// not import infrastructure — cmd/server's wiring is where a mismatch would
+// surface instead.
+var _ orderCreatedConsumer = (*application.ConsumeOrderCreatedUseCase)(nil)
