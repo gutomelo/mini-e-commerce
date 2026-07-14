@@ -8,6 +8,7 @@
     "dev": "go run ./cmd/server",
     "lint": "test -z \"$(gofmt -l .)\" && go vet ./...",
     "test": "go test ./...",
-    "migrate": "go run ./cmd/migrate"
+    "migrate": "go run ./cmd/migrate",
+    "seed": "go run ./cmd/seed"
   }
 }
