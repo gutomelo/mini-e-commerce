@@ -7,31 +7,40 @@ import com.miniecommerce.payment.payment.application.port.PaymentGateway;
 import com.miniecommerce.payment.payment.application.port.PaymentRepository;
 import com.miniecommerce.payment.payment.application.port.ProcessedEventRepository;
 import com.miniecommerce.payment.payment.infrastructure.fake.InMemoryEventPublisher;
+import com.miniecommerce.payment.payment.infrastructure.qstash.QStashEventPublisher;
 import com.miniecommerce.payment.payment.infrastructure.qstash.QStashSignatureVerifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestClient;
 
 /**
  * Wires the payment use cases and their supporting adapters into Spring beans, now that the real
  * infrastructure (JPA repositories, {@link com.miniecommerce.payment.payment.infrastructure.gateway.SimulatedPaymentGateway},
  * and a real database) exists for them to depend on.
  *
- * <p><b>EventPublisher wiring decision:</b> this configuration wires {@link InMemoryEventPublisher}
- * as the {@link EventPublisher} bean, not the real {@code QStashEventPublisher}. Per the Phase 5
- * spec's Non-Goals, a real QStash round-trip for outbound publishing is not required yet, and
- * Phase 4's inventory service set the precedent of defaulting to the in-memory fake until a
- * consumer of {@code payment.completed}/{@code payment.failed} actually exists. Introducing
- * profile-switching machinery (e.g. a {@code @Profile("prod")} real bean plus a
- * {@code @Profile("!prod")} fake bean) to support a code path nothing yet calls would be exactly
- * the kind of unnecessary abstraction the project's engineering rules ask to avoid — this can be
- * revisited in the phase that actually adds a payment-event consumer.
+ * <p><b>EventPublisher wiring decision:</b> this configuration selects between
+ * {@link InMemoryEventPublisher} and the real {@link QStashEventPublisher} at runtime, based on the
+ * {@code EVENT_PUBLISHER_MODE} environment variable (mapped to {@code event.publisher.mode}). Only
+ * the exact value {@code "real"} selects the QStash adapter; anything else — unset, empty, or a
+ * typo — falls back to the in-memory fake, so a misconfigured environment never silently starts
+ * publishing (or failing to publish) real events. This mirrors the same toggle added to
+ * {@code apps/inventory} and {@code apps/api} in Phase 8, now that a real consumer of
+ * {@code payment.completed}/{@code payment.failed} exists.
  */
 @Configuration
 public class PaymentBeanConfiguration {
 
+    private static final String REAL_MODE = "real";
+
     @Bean
-    public EventPublisher eventPublisher() {
+    public EventPublisher eventPublisher(
+            @Value("${event.publisher.mode:fake}") String publisherMode,
+            @Value("${payment.qstash.destination-url}") String destinationUrl,
+            @Value("${qstash.token}") String token) {
+        if (REAL_MODE.equals(publisherMode)) {
+            return new QStashEventPublisher(RestClient.builder(), destinationUrl, token);
+        }
         return new InMemoryEventPublisher();
     }
 
