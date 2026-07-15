@@ -41,12 +41,12 @@ Turn `apps/api` into the real `order.created` producer that `apps/inventory` and
 
 ## Verification
 
-- [ ] `pnpm install` — completes without errors
-- [ ] `pnpm turbo run build lint test --filter=api` — passes (build, eslint, `jest` unit suite including `CreateOrderUseCase`/`HandlePaymentEventUseCase` new tests)
-- [ ] `docker compose up -d --wait postgres redis` — infra healthy for the e2e run
-- [ ] `pnpm --filter api run test:e2e` — e2e suite passes, including the new order-created-publish and payment-event-consumer cases (signed completed/failed, idempotent redelivery, invalid signature rejection, unsupported event rejection)
-- [ ] `(cd apps/inventory && go test ./...)` — inventory's existing suite still passes unmodified against the superset `order.created` payload
-- [ ] `(cd apps/payment && PAYMENT_DATABASE_URL="jdbc:postgresql://localhost:5433/mini_ecommerce_payment_test?user=postgres&password=postgres" ./mvnw test)` after `docker compose exec -T postgres psql -U postgres -c "DROP DATABASE IF EXISTS mini_ecommerce_payment_test"` and `docker compose exec -T postgres psql -U postgres -c "CREATE DATABASE mini_ecommerce_payment_test"` — payment's existing suite still passes unmodified against the superset `order.created` payload
-- [ ] `docker compose build api` — image builds successfully
-- [ ] `docker compose up -d --wait` — full stack healthy with the new `API_QSTASH_DESTINATION_URL` wiring
-- [ ] `docker compose down -v` — exits 0 (clean teardown)
+- [x] `pnpm install` — completes without errors
+- [x] `pnpm turbo run build lint test --filter=api` — passes (build, eslint, `jest` unit suite including `CreateOrderUseCase`/`HandlePaymentEventUseCase` new tests)
+- [x] `docker compose up -d --wait postgres redis` — infra healthy for the e2e run
+- [x] `pnpm --filter api run test:e2e` — e2e suite passes, including the new order-created-publish and payment-event-consumer cases (signed completed/failed, idempotent redelivery, invalid signature rejection, unsupported event rejection)
+- [x] `(cd apps/inventory && go test ./...)` — inventory's existing suite still passes unmodified against the superset `order.created` payload
+- [x] `(cd apps/payment && PAYMENT_DATABASE_URL="jdbc:postgresql://localhost:5433/mini_ecommerce_payment_test?user=postgres&password=postgres" ./mvnw test)` after `docker compose exec -T postgres psql -U postgres -c "DROP DATABASE IF EXISTS mini_ecommerce_payment_test"` and `docker compose exec -T postgres psql -U postgres -c "CREATE DATABASE mini_ecommerce_payment_test"` — payment's existing suite still passes unmodified against the superset `order.created` payload
+- [x] `docker compose build api` — image builds successfully
+- [x] `docker compose up -d --wait` — full stack healthy with the new `API_QSTASH_DESTINATION_URL` wiring
+- [x] `docker compose down -v` — exits 0 (clean teardown)
