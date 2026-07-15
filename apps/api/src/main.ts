@@ -3,6 +3,7 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
+import { resolveCorsOrigins } from './infrastructure/cors/cors-origins';
 import { correlationIdMiddleware } from './presentation/middleware/correlation-id.middleware';
 
 async function bootstrap() {
@@ -19,6 +20,18 @@ async function bootstrap() {
   app.use(correlationIdMiddleware);
 
   app.useLogger(app.get(Logger));
+
+  // Configured before the global prefix/pipes: an allow-list built from
+  // `CORS_ORIGINS` (comma-separated). Behind the compose reverse proxy,
+  // `apps/admin`/`apps/web` share an origin with `apps/api` and never
+  // exercise this; it exists for local `ng serve`/`next dev` callers on
+  // their own port. An empty/unset allow-list disables CORS entirely
+  // (`origin: false`) rather than defaulting to wide-open (`origin: true`).
+  const corsOrigins = resolveCorsOrigins();
+  app.enableCors({
+    origin: corsOrigins.length > 0 ? corsOrigins : false,
+    credentials: true,
+  });
 
   app.setGlobalPrefix('api');
   app.enableVersioning({
