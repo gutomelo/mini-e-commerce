@@ -1,6 +1,8 @@
 import { Global, Module } from '@nestjs/common';
 import { EventPublisher } from '../../application/ports/event-publisher.port';
+import { ProcessedEventRepository } from '../../application/ports/processed-event-repository.port';
 import { FakeEventPublisher } from './fake-event-publisher';
+import { PrismaProcessedEventRepository } from './prisma-processed-event.repository';
 
 /**
  * Provides the {@link EventPublisher} port application-wide.
@@ -13,7 +15,10 @@ import { FakeEventPublisher } from './fake-event-publisher';
  */
 @Global()
 @Module({
-  providers: [{ provide: EventPublisher, useClass: FakeEventPublisher }],
-  exports: [EventPublisher],
+  providers: [
+    { provide: EventPublisher, useClass: FakeEventPublisher },
+    { provide: ProcessedEventRepository, useClass: PrismaProcessedEventRepository },
+  ],
+  exports: [EventPublisher, ProcessedEventRepository],
 })
 export class EventsModule {}
