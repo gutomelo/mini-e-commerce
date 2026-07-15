@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 
 import { adminGuard } from './core/auth/admin.guard';
 import { LoginPage } from './features/auth/login-page/login-page';
+import { CategoryFormPage } from './features/categories/category-form/category-form-page';
+import { CategoryListPage } from './features/categories/category-list/category-list-page';
 import { DashboardPage } from './features/dashboard/dashboard-page/dashboard-page';
 import { ProductFormPage } from './features/products/product-form/product-form-page';
 import { ProductListPage } from './features/products/product-list/product-list-page';
@@ -18,8 +20,8 @@ import { AppShell } from './shared/layout/app-shell/app-shell';
  * subtree behind an authenticated `ADMIN` session in one place, instead of
  * being repeated on every individual feature route.
  *
- * Feature routes (products, categories, orders) are added as `children` by
- * later tasks in this phase.
+ * Feature routes are added as `children`; the orders feature is added by a
+ * later task in this phase.
  */
 export const routes: Routes = [
   {
@@ -35,6 +37,9 @@ export const routes: Routes = [
       { path: 'products', component: ProductListPage },
       { path: 'products/new', component: ProductFormPage },
       { path: 'products/:id/edit', component: ProductFormPage },
+      { path: 'categories', component: CategoryListPage },
+      { path: 'categories/new', component: CategoryFormPage },
+      { path: 'categories/:id/edit', component: CategoryFormPage },
     ],
   },
 ];

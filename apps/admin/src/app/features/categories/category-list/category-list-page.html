@@ -1,0 +1,40 @@
+<div class="category-list-page">
+  <div class="category-list-header">
+    <h1>Categories</h1>
+    <button mat-flat-button color="primary" type="button" (click)="createCategory()">
+      <mat-icon>add</mat-icon>
+      New Category
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="category-list-loading">
+      <mat-spinner diameter="32" />
+      <span>Loading categories…</span>
+    </div>
+  } @else if (errorMessage(); as message) {
+    <p class="category-list-error" role="alert">{{ message }}</p>
+  } @else {
+    <app-data-table
+      [columns]="columns"
+      [rows]="rows()"
+      [total]="total()"
+      [pageIndex]="0"
+      [pageSize]="total() || 1"
+      [pageSizeOptions]="[total() || 1]"
+      (rowClick)="editCategory($event)"
+    />
+  }
+</div>
+
+<ng-template #actionsCell let-row>
+  <button
+    mat-icon-button
+    type="button"
+    color="warn"
+    aria-label="Delete category"
+    (click)="$event.stopPropagation(); deleteCategory(row)"
+  >
+    <mat-icon>delete</mat-icon>
+  </button>
+</ng-template>
