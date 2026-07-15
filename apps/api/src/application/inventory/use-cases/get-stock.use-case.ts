@@ -12,8 +12,8 @@ import { InventoryClient, StockInfo } from '../../ports/inventory-client.port';
 export class GetStockUseCase {
   constructor(private readonly inventoryClient: InventoryClient) {}
 
-  async execute(productId: string): Promise<StockInfo> {
-    const stock = await this.inventoryClient.getStock(productId);
+  async execute(productId: string, correlationId: string): Promise<StockInfo> {
+    const stock = await this.inventoryClient.getStock(productId, correlationId);
 
     if (!stock) {
       throw new EntityNotFoundError('Stock', productId);

@@ -1,22 +1,27 @@
 import { Global, Module } from '@nestjs/common';
 import { EventPublisher } from '../../application/ports/event-publisher.port';
 import { ProcessedEventRepository } from '../../application/ports/processed-event-repository.port';
-import { FakeEventPublisher } from './fake-event-publisher';
 import { PrismaProcessedEventRepository } from './prisma-processed-event.repository';
+import { selectEventPublisher } from './select-event-publisher';
 
 /**
  * Provides the {@link EventPublisher} port application-wide.
  *
- * Defaults to {@link FakeEventPublisher} — matching Phases 4/5's "fake is
- * the default bean" convention — so `/verify-phase` and local dev never
- * depend on a live Upstash round-trip. The real `QStashEventPublisher`
- * adapter exists and is unit-tested, but is not wired as the active
- * provider until a later task switches it on.
+ * The active implementation is chosen at runtime by
+ * {@link selectEventPublisher}, based on the `EVENT_PUBLISHER_MODE`
+ * environment variable: `"real"` activates the `QStashEventPublisher`
+ * adapter, and every other value (unset, empty, or a typo) falls back to
+ * `FakeEventPublisher` — so `/verify-phase`, local dev, and any
+ * misconfigured deployment never accidentally depend on a live Upstash
+ * round-trip.
  */
 @Global()
 @Module({
   providers: [
-    { provide: EventPublisher, useClass: FakeEventPublisher },
+    {
+      provide: EventPublisher,
+      useFactory: () => selectEventPublisher(process.env.EVENT_PUBLISHER_MODE),
+    },
     { provide: ProcessedEventRepository, useClass: PrismaProcessedEventRepository },
   ],
   exports: [EventPublisher, ProcessedEventRepository],

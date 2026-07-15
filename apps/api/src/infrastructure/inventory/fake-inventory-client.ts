@@ -22,11 +22,11 @@ export class FakeInventoryClient implements InventoryClient {
     return stockInfo;
   }
 
-  getStock(productId: string): Promise<StockInfo | null> {
+  getStock(productId: string, _correlationId: string): Promise<StockInfo | null> {
     return Promise.resolve(this.stock.get(productId) ?? null);
   }
 
-  setStock(productId: string, quantity: number): Promise<StockInfo> {
+  setStock(productId: string, quantity: number, _correlationId: string): Promise<StockInfo> {
     const stockInfo: StockInfo = { productId, quantity, updatedAt: new Date().toISOString() };
     this.stock.set(productId, stockInfo);
     return Promise.resolve(stockInfo);

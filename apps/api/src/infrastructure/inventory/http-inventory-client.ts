@@ -3,6 +3,7 @@ import { InventoryClient, StockInfo } from '../../application/ports/inventory-cl
 import { resolveInventoryBaseUrl, resolveInventoryInternalApiKey } from './inventory-env';
 
 const INTERNAL_API_KEY_HEADER = 'X-Internal-Api-Key';
+const CORRELATION_ID_HEADER = 'X-Correlation-Id';
 
 /**
  * `InventoryClient` adapter that calls `apps/inventory`'s existing internal
@@ -22,8 +23,8 @@ const INTERNAL_API_KEY_HEADER = 'X-Internal-Api-Key';
 export class HttpInventoryClient implements InventoryClient {
   private readonly logger = new Logger(HttpInventoryClient.name);
 
-  async getStock(productId: string): Promise<StockInfo | null> {
-    const response = await this.request('GET', productId);
+  async getStock(productId: string, correlationId: string): Promise<StockInfo | null> {
+    const response = await this.request('GET', productId, correlationId);
 
     if (response.status === 404) {
       return null;
@@ -32,14 +33,15 @@ export class HttpInventoryClient implements InventoryClient {
     return this.parseOrThrow(response, productId);
   }
 
-  async setStock(productId: string, quantity: number): Promise<StockInfo> {
-    const response = await this.request('PATCH', productId, { quantity });
+  async setStock(productId: string, quantity: number, correlationId: string): Promise<StockInfo> {
+    const response = await this.request('PATCH', productId, correlationId, { quantity });
     return this.parseOrThrow(response, productId);
   }
 
   private async request(
     method: 'GET' | 'PATCH',
     productId: string,
+    correlationId: string,
     body?: unknown,
   ): Promise<Response> {
     const url = `${resolveInventoryBaseUrl()}/internal/v1/stock/${encodeURIComponent(productId)}`;
@@ -49,6 +51,7 @@ export class HttpInventoryClient implements InventoryClient {
         method,
         headers: {
           [INTERNAL_API_KEY_HEADER]: resolveInventoryInternalApiKey(),
+          [CORRELATION_ID_HEADER]: correlationId,
           ...(body ? { 'Content-Type': 'application/json' } : {}),
         },
         body: body ? JSON.stringify(body) : undefined,

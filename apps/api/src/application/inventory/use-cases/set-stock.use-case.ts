@@ -11,7 +11,7 @@ import { InventoryClient, StockInfo } from '../../ports/inventory-client.port';
 export class SetStockUseCase {
   constructor(private readonly inventoryClient: InventoryClient) {}
 
-  async execute(productId: string, quantity: number): Promise<StockInfo> {
-    return this.inventoryClient.setStock(productId, quantity);
+  async execute(productId: string, quantity: number, correlationId: string): Promise<StockInfo> {
+    return this.inventoryClient.setStock(productId, quantity, correlationId);
   }
 }

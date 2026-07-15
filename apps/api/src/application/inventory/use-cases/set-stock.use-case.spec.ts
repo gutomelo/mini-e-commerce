@@ -8,6 +8,7 @@ describe('SetStockUseCase', () => {
     quantity: 20,
     updatedAt: new Date().toISOString(),
   };
+  const correlationId = 'correlation-id-123';
 
   let inventoryClient: MockedPort<InventoryClient>;
   let useCase: SetStockUseCase;
@@ -23,9 +24,13 @@ describe('SetStockUseCase', () => {
   it('delegates to the InventoryClient and returns the updated stock', async () => {
     inventoryClient.setStock.mockResolvedValue(stock);
 
-    const result = await useCase.execute(stock.productId, stock.quantity);
+    const result = await useCase.execute(stock.productId, stock.quantity, correlationId);
 
-    expect(inventoryClient.setStock).toHaveBeenCalledWith(stock.productId, stock.quantity);
+    expect(inventoryClient.setStock).toHaveBeenCalledWith(
+      stock.productId,
+      stock.quantity,
+      correlationId,
+    );
     expect(result).toEqual(stock);
   });
 });

@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import type { Request } from 'express';
 import { StockInfo } from '../../application/ports/inventory-client.port';
 import { GetStockUseCase } from '../../application/inventory/use-cases/get-stock.use-case';
 import { SetStockUseCase } from '../../application/inventory/use-cases/set-stock.use-case';
@@ -31,8 +32,9 @@ export class InventoryController {
   @ApiOperation({ summary: "Look up a product's stock quantity (ADMIN only)" })
   async getStock(
     @Param('productId', ParseUUIDPipe) productId: string,
+    @Req() request: Request,
   ): Promise<SingleResponse<StockInfo>> {
-    const stock = await this.getStockUseCase.execute(productId);
+    const stock = await this.getStockUseCase.execute(productId, request.correlationId);
     return { data: stock };
   }
 
@@ -41,8 +43,13 @@ export class InventoryController {
   async setStock(
     @Param('productId', ParseUUIDPipe) productId: string,
     @Body() dto: SetStockDto,
+    @Req() request: Request,
   ): Promise<SingleResponse<StockInfo>> {
-    const stock = await this.setStockUseCase.execute(productId, dto.quantity);
+    const stock = await this.setStockUseCase.execute(
+      productId,
+      dto.quantity,
+      request.correlationId,
+    );
     return { data: stock };
   }
 }

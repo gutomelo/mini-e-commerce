@@ -11,9 +11,17 @@ export interface StockInfo {
  * do), per the project's Service-Oriented Architecture rule.
  */
 export abstract class InventoryClient {
-  /** Returns `null` when `apps/inventory` reports no stock row for `productId` (its `404`). */
-  abstract getStock(productId: string): Promise<StockInfo | null>;
+  /**
+   * Returns `null` when `apps/inventory` reports no stock row for
+   * `productId` (its `404`). `correlationId` is forwarded to `apps/inventory`
+   * so its logs can be correlated with the originating `apps/api` request.
+   */
+  abstract getStock(productId: string, correlationId: string): Promise<StockInfo | null>;
 
-  /** Sets an absolute stock quantity. `quantity` must be a non-negative integer. */
-  abstract setStock(productId: string, quantity: number): Promise<StockInfo>;
+  /**
+   * Sets an absolute stock quantity. `quantity` must be a non-negative
+   * integer. `correlationId` is forwarded to `apps/inventory` so its logs
+   * can be correlated with the originating `apps/api` request.
+   */
+  abstract setStock(productId: string, quantity: number, correlationId: string): Promise<StockInfo>;
 }
