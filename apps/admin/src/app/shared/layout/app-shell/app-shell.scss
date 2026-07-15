@@ -1,0 +1,34 @@
+.shell-container {
+  height: 100dvh;
+}
+
+.shell-nav {
+  width: 240px;
+}
+
+.shell-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.shell-title {
+  font-weight: 500;
+}
+
+.shell-spacer {
+  flex: 1 1 auto;
+}
+
+.shell-user {
+  margin-inline-end: 1rem;
+  font-size: 0.875rem;
+}
+
+.shell-content {
+  padding: 1.5rem;
+}
+
+.shell-nav-link--active {
+  font-weight: 600;
+}

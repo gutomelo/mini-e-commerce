@@ -1,0 +1,34 @@
+<mat-sidenav-container class="shell-container">
+  <mat-sidenav mode="side" opened class="shell-nav" role="navigation">
+    <mat-nav-list>
+      @for (link of navLinks; track link.path) {
+        <a
+          mat-list-item
+          [routerLink]="link.path"
+          routerLinkActive="shell-nav-link--active"
+          [routerLinkActiveOptions]="{ exact: link.path === '/' }"
+        >
+          <mat-icon matListItemIcon>{{ link.icon }}</mat-icon>
+          <span matListItemTitle>{{ link.label }}</span>
+        </a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="shell-toolbar">
+      <span class="shell-title">Mini E-Commerce Admin</span>
+      <span class="shell-spacer"></span>
+      @if (user(); as currentUser) {
+        <span class="shell-user">{{ currentUser.email }} ({{ currentUser.role }})</span>
+      }
+      <button mat-icon-button type="button" aria-label="Log out" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </mat-toolbar>
+
+    <main class="shell-content">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
