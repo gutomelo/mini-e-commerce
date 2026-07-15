@@ -1,19 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { OrderRepository } from '../../../application/orders/ports/order-repository.port';
 import {
+  AdminOrderListFilter,
+  AdminOrderListResult,
   NewOrder,
   Order,
   OrderListFilter,
   OrderListResult,
   OrderStatus,
+  OrderWithCustomer,
 } from '../../../domain/orders/order.entity';
 import { PrismaService } from '../../prisma/prisma.service';
 import type {
   Order as PrismaOrder,
   OrderItem as PrismaOrderItem,
+  User as PrismaUser,
 } from '../../../generated/prisma/client';
 
 type PrismaOrderWithItems = PrismaOrder & { items: PrismaOrderItem[] };
+type PrismaOrderWithItemsAndUser = PrismaOrderWithItems & { user: Pick<PrismaUser, 'email'> };
+
+/** The `OrderStatus` values Prisma's generated enum accepts, used to validate an untrusted status string. */
+const ORDER_STATUSES: readonly OrderStatus[] = ['PLACED', 'PAID', 'PAYMENT_FAILED'];
+
+function isOrderStatus(value: string): value is OrderStatus {
+  return (ORDER_STATUSES as readonly string[]).includes(value);
+}
 
 @Injectable()
 export class PrismaOrderRepository implements OrderRepository {
@@ -84,6 +96,40 @@ export class PrismaOrderRepository implements OrderRepository {
     });
     return toDomain(record);
   }
+
+  async listAll(filter: AdminOrderListFilter): Promise<AdminOrderListResult> {
+    // `filter.status` is already typed as `OrderStatus | undefined` by the
+    // time it reaches this port, but the guard below is kept as a defensive,
+    // fail-loud check rather than trusting the type at the persistence
+    // boundary: an invalid value is rejected with a clear error instead of
+    // being silently ignored (matching all rows) or crashing inside Prisma.
+    const rawStatus: string | undefined = filter.status;
+    if (rawStatus !== undefined && !isOrderStatus(rawStatus)) {
+      throw new Error(`Invalid order status filter: "${rawStatus}"`);
+    }
+    const where = filter.status ? { status: filter.status } : {};
+
+    const [records, total] = await Promise.all([
+      this.prisma.order.findMany({
+        where,
+        include: { items: true, user: { select: { email: true } } },
+        orderBy: { createdAt: 'desc' },
+        skip: (filter.page - 1) * filter.limit,
+        take: filter.limit,
+      }),
+      this.prisma.order.count({ where }),
+    ]);
+
+    return { items: records.map(toDomainWithUser), total };
+  }
+
+  async findByIdWithUser(id: string): Promise<OrderWithCustomer | null> {
+    const record = await this.prisma.order.findUnique({
+      where: { id },
+      include: { items: true, user: { select: { email: true } } },
+    });
+    return record ? toDomainWithUser(record) : null;
+  }
 }
 
 function toDomain(record: PrismaOrderWithItems): Order {
@@ -102,4 +148,8 @@ function toDomain(record: PrismaOrderWithItems): Order {
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
   };
+}
+
+function toDomainWithUser(record: PrismaOrderWithItemsAndUser): OrderWithCustomer {
+  return { ...toDomain(record), userEmail: record.user.email };
 }

@@ -1,9 +1,12 @@
 import {
+  AdminOrderListFilter,
+  AdminOrderListResult,
   NewOrder,
   Order,
   OrderListFilter,
   OrderListResult,
   OrderStatus,
+  OrderWithCustomer,
 } from '../../../domain/orders/order.entity';
 
 /**
@@ -36,4 +39,31 @@ export abstract class OrderRepository {
   abstract findById(id: string): Promise<Order | null>;
   /** Updates only the order's status; `updatedAt` is bumped by Prisma's `@updatedAt`. */
   abstract updateStatus(id: string, status: OrderStatus): Promise<Order>;
+
+  /**
+   * Paginated, newest-first, across every customer, optionally filtered by
+   * `status`. Joins `User` for `userEmail`.
+   *
+   * This is the second deliberate exception to the "every read is scoped to
+   * a `userId`" rule stated above (the first being `findById`). It exists
+   * only for the ADMIN-only order-review screens added in Phase 7 — reachable
+   * exclusively from routes behind `RolesGuard` + `@Roles(ADMIN)`. Do not
+   * reuse this method for any customer-facing endpoint; use `list` there
+   * instead.
+   */
+  abstract listAll(filter: AdminOrderListFilter): Promise<AdminOrderListResult>;
+
+  /**
+   * Returns the order by id, unscoped by `userId`, joined with the owning
+   * user for `userEmail`. The third deliberate exception to the port's usual
+   * `userId`-scoping, alongside `findById` and `listAll` above.
+   *
+   * `findById` already returns everything the QStash payment-event consumer
+   * needs (it never displays a customer identity), so it was left
+   * unchanged; this method exists specifically for the ADMIN order-detail
+   * view, which does need `userEmail` to identify the owning customer. Do
+   * not reuse this method for any customer-facing endpoint; use
+   * `findByIdForUser` there instead.
+   */
+  abstract findByIdWithUser(id: string): Promise<OrderWithCustomer | null>;
 }

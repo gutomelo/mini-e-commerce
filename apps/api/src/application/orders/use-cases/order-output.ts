@@ -1,4 +1,4 @@
-import { Order } from '../../../domain/orders/order.entity';
+import { Order, OrderWithCustomer } from '../../../domain/orders/order.entity';
 
 /** Line item shape returned to the presentation layer as part of `OrderOutput`. */
 export interface OrderItemOutput {
@@ -48,5 +48,38 @@ export function toOrderSummaryOutput(order: Order): OrderSummaryOutput {
     totalCents: order.totalCents,
     itemCount: order.items.length,
     createdAt: order.createdAt,
+  };
+}
+
+/**
+ * `OrderOutput` plus the owning customer's `userId`/`userEmail`, returned by
+ * `GetAnyOrderUseCase` for the ADMIN-only order-detail view. The
+ * customer-facing `OrderOutput` above is left unchanged — a customer never
+ * needs to be told their own id/email back.
+ */
+export interface AdminOrderOutput extends OrderOutput {
+  userId: string;
+  userEmail: string;
+}
+
+/** `OrderSummaryOutput` plus `userId`/`userEmail`, returned by `ListAllOrdersUseCase`. */
+export interface AdminOrderSummaryOutput extends OrderSummaryOutput {
+  userId: string;
+  userEmail: string;
+}
+
+export function toAdminOrderOutput(order: OrderWithCustomer): AdminOrderOutput {
+  return {
+    ...toOrderOutput(order),
+    userId: order.userId,
+    userEmail: order.userEmail,
+  };
+}
+
+export function toAdminOrderSummaryOutput(order: OrderWithCustomer): AdminOrderSummaryOutput {
+  return {
+    ...toOrderSummaryOutput(order),
+    userId: order.userId,
+    userEmail: order.userEmail,
   };
 }
