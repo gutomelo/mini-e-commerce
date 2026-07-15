@@ -1,0 +1,31 @@
+# Fly.io app configuration for apps/admin (Angular admin panel, static build
+# served by nginx).
+#
+# Deploy from the REPO ROOT (not this directory), so the build context
+# matches the same context docker-compose.yml already uses:
+#
+#   flyctl deploy --config apps/admin/fly.toml --dockerfile apps/admin/Dockerfile .
+#
+# Note: the image's baked-in Angular `baseHref` is `/admin/` (matching the
+# compose reverse-proxy topology, where this app is only ever reached under
+# an `/admin/` path prefix). Deployed standalone on Fly, this app's own
+# domain therefore serves the SPA at `https://<app>.fly.dev/admin/`, not at
+# the bare root -- see docs/deployment/fly-io.md for the full explanation.
+#
+# See docs/deployment/fly-io.md for the full app-creation/secrets sequence.
+
+app = "mini-ecommerce-admin"
+primary_region = "gru"
+
+[build]
+
+[http_service]
+  internal_port = 80
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
