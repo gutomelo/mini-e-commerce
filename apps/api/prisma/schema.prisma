@@ -65,6 +65,8 @@ model Product {
 
 enum OrderStatus {
   PLACED
+  PAID
+  PAYMENT_FAILED
 }
 
 model Order {
@@ -91,4 +93,12 @@ model OrderItem {
   product        Product @relation(fields: [productId], references: [id])
 
   @@index([orderId])
+}
+
+model ProcessedEvent {
+  correlationId String   @db.Uuid
+  event         String
+  processedAt   DateTime @default(now())
+
+  @@id([correlationId, event])
 }

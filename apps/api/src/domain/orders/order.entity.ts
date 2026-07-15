@@ -9,8 +9,12 @@
  * floating-point rounding issues.
  */
 
-/** Order lifecycle status. Only `PLACED` exists until payment/inventory integration (Phase 6). */
-export type OrderStatus = 'PLACED';
+/**
+ * Order lifecycle status. `PLACED` is the initial state; `PAID`/`PAYMENT_FAILED`
+ * are set by the QStash consumer reacting to `payment.completed`/`payment.failed`
+ * (Phase 6). `inventory.updated` has no bearing on order status.
+ */
+export type OrderStatus = 'PLACED' | 'PAID' | 'PAYMENT_FAILED';
 
 export interface OrderItem {
   readonly id: string;
