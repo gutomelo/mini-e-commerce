@@ -12,7 +12,7 @@ A phase may start only when the previous phase is `Done` (blocking gate enforced
 | 2   | API Core (NestJS)              | [api core](specs/2026-07-12-api-core.md)                           | [phase-02](phases/phase-02-api-core.md)            | Done        |
 | 3   | Storefront (Next.js)           | [storefront](specs/2026-07-13-storefront.md)                       | [phase-03](phases/phase-03-storefront.md)          | Done        |
 | 4   | Inventory Service (Go)         | [inventory service](specs/2026-07-13-inventory-service.md)         | [phase-04](phases/phase-04-inventory-service.md)   | Done        |
-| 5   | Payment Service (Spring Boot)  | [payment service](specs/2026-07-14-payment-service.md)             | [phase-05](phases/phase-05-payment-service.md)     | In Progress |
+| 5   | Payment Service (Spring Boot)  | [payment service](specs/2026-07-14-payment-service.md)             | [phase-05](phases/phase-05-payment-service.md)     | Done        |
 | 6   | Event-Driven Integration (E2E) | —                                                                  | —                                                  | Not Started |
 | 7   | Admin Panel (Angular)          | —                                                                  | —                                                  | Not Started |
 | 8   | Hardening & Deployment         | —                                                                  | —                                                  | Not Started |

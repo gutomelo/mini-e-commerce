@@ -37,12 +37,12 @@ Turn `apps/payment` into the real payment bounded context: a Payment domain with
 
 ## Verification
 
-- [ ] `pnpm install` — completes without errors
-- [ ] `pnpm turbo run build lint test --filter=payment` — passes (`./mvnw package`, `./mvnw compile`, `./mvnw test`)
-- [ ] `(cd apps/payment && ./mvnw test)` — all tests pass, including the sentinel-amount, idempotent-redelivery, invalid-signature-rejection, and duplicate-order-conflict cases
-- [ ] `docker compose up -d --wait postgres` — infra healthy for the migration
-- [ ] `docker compose build payment` — image builds successfully
-- [ ] `docker compose up -d --wait` — full stack healthy; payment creates its database and migrates automatically on start
-- [ ] `! docker compose exec -T payment wget -q -O /dev/null http://127.0.0.1:8082/internal/v1/payments/00000000-0000-0000-0000-000000000000` — exits non-zero (rejected: missing `X-Internal-Api-Key`)
-- [ ] `! docker compose ps payment | grep '0.0.0.0'` — exits 0 (no host port published for the internal service)
-- [ ] `docker compose down -v` — exits 0 (clean teardown)
+- [x] `pnpm install` — completes without errors
+- [x] `pnpm turbo run build lint test --filter=payment` — passes (`./mvnw package`, `./mvnw compile`, `./mvnw test`)
+- [x] `docker compose up -d --wait postgres` (if not already running); `docker compose exec -T postgres psql -U postgres -c "DROP DATABASE IF EXISTS mini_ecommerce_payment_test"`; `docker compose exec -T postgres psql -U postgres -c "CREATE DATABASE mini_ecommerce_payment_test"`; then `(cd apps/payment && PAYMENT_DATABASE_URL="jdbc:postgresql://localhost:5433/mini_ecommerce_payment_test?user=postgres&password=postgres" ./mvnw test)` — all tests pass, including the Postgres-backed sentinel-amount, idempotent-redelivery, invalid-signature-rejection, and duplicate-order-conflict cases in `PaymentIntegrationTests` (the original command omitted `PAYMENT_DATABASE_URL`, so `PaymentIntegrationTests` silently skipped — 0 tests run — instead of exercising those cases; fixed during `/verify-phase 5` with the user's confirmation)
+- [x] `docker compose up -d --wait postgres` — infra healthy for the migration
+- [x] `docker compose build payment` — image builds successfully
+- [x] `docker compose up -d --wait` — full stack healthy; payment creates its database and migrates automatically on start
+- [x] `! docker compose exec -T payment wget -q -O /dev/null http://127.0.0.1:8082/internal/v1/payments/00000000-0000-0000-0000-000000000000` — exits non-zero (rejected: missing `X-Internal-Api-Key`)
+- [x] `! docker compose ps payment | grep '0.0.0.0'` — exits 0 (no host port published for the internal service)
+- [x] `docker compose down -v` — exits 0 (clean teardown)
