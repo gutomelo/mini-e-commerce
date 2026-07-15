@@ -65,6 +65,7 @@ services:
       CORS_ORIGINS: ${CORS_ORIGINS:-}
       INVENTORY_BASE_URL: ${INVENTORY_BASE_URL:-http://inventory:8081}
       INVENTORY_INTERNAL_API_KEY: ${INTERNAL_API_KEY:-dev-internal-api-key-change-me}
+      EVENT_PUBLISHER_MODE: ${EVENT_PUBLISHER_MODE:-fake}
     depends_on:
       postgres:
         condition: service_healthy
@@ -97,6 +98,7 @@ services:
       QSTASH_CURRENT_SIGNING_KEY: ${QSTASH_CURRENT_SIGNING_KEY:-change-me}
       QSTASH_NEXT_SIGNING_KEY: ${QSTASH_NEXT_SIGNING_KEY:-change-me}
       QSTASH_DESTINATION_URL: ${QSTASH_DESTINATION_URL:-http://inventory:8081/internal/v1/events/qstash}
+      EVENT_PUBLISHER_MODE: ${EVENT_PUBLISHER_MODE:-fake}
     depends_on:
       postgres:
         condition: service_healthy
@@ -119,6 +121,7 @@ services:
       QSTASH_CURRENT_SIGNING_KEY: ${QSTASH_CURRENT_SIGNING_KEY:-change-me}
       QSTASH_NEXT_SIGNING_KEY: ${QSTASH_NEXT_SIGNING_KEY:-change-me}
       PAYMENT_QSTASH_DESTINATION_URL: ${PAYMENT_QSTASH_DESTINATION_URL:-http://payment:8082/internal/v1/events/qstash}
+      EVENT_PUBLISHER_MODE: ${EVENT_PUBLISHER_MODE:-fake}
     depends_on:
       postgres:
         condition: service_healthy
