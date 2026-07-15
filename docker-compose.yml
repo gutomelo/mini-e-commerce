@@ -62,6 +62,9 @@ services:
       QSTASH_DESTINATION_URL: ${QSTASH_DESTINATION_URL:-http://inventory:8081/internal/v1/events/qstash}
       PAYMENT_QSTASH_DESTINATION_URL: ${PAYMENT_QSTASH_DESTINATION_URL:-http://payment:8082/internal/v1/events/qstash}
       API_QSTASH_DESTINATION_URL: ${API_QSTASH_DESTINATION_URL:-http://api:3001/api/v1/events/qstash}
+      CORS_ORIGINS: ${CORS_ORIGINS:-}
+      INVENTORY_BASE_URL: ${INVENTORY_BASE_URL:-http://inventory:8081}
+      INVENTORY_INTERNAL_API_KEY: ${INTERNAL_API_KEY:-dev-internal-api-key-change-me}
     depends_on:
       postgres:
         condition: service_healthy
