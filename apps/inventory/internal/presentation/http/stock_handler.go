@@ -50,7 +50,12 @@ func (h *StockHandler) Get(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		slog.Error("stock handler: get stock", "productId", productID, "error", err)
+		slog.Error(
+			"stock handler: get stock",
+			"productId", productID,
+			"correlationId", CorrelationIDFromContext(r.Context()),
+			"error", err,
+		)
 		writeError(w, http.StatusInternalServerError, "internal error")
 
 		return
@@ -86,7 +91,12 @@ func (h *StockHandler) Set(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		slog.Error("stock handler: set stock", "productId", productID, "error", err)
+		slog.Error(
+			"stock handler: set stock",
+			"productId", productID,
+			"correlationId", CorrelationIDFromContext(r.Context()),
+			"error", err,
+		)
 		writeError(w, http.StatusInternalServerError, "internal error")
 
 		return

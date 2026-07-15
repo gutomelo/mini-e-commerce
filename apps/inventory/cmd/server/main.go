@@ -121,22 +121,14 @@ func openDatabase(ctx context.Context) (*sql.DB, error) {
 // together and registers every route (including the pre-existing
 // GET /health) on a fresh http.ServeMux.
 //
-// EventPublisher choice: the in-memory fake.EventPublisher is used here
-// rather than qstash.EventPublisher. The real publisher needs a destination
-// URL and QSTASH_TOKEN to actually deliver inventory.updated to Upstash, and
-// nothing yet subscribes to that event (per the phase spec's non-goals), so
-// wiring the live HTTP client here would add a hard dependency on
-// Upstash/network access for local runs without any consumer to observe the
-// result. Swapping in qstash.NewEventPublisher(destination, token) is a
-// one-line change once a real destination is needed.
+// EventPublisher choice: which adapter backs the event publisher is a
+// runtime choice driven by EVENT_PUBLISHER_MODE (see newEventPublisher) —
+// "real" delivers inventory.updated to Upstash QStash, anything else
+// (including unset) keeps the in-memory fake so local runs and tests don't
+// need network access or a QStash destination.
 func newMux(db *sql.DB) (*http.ServeMux, error) {
 	stockRepo := postgres.NewPostgresStockRepository(db)
 	processedRepo := postgres.NewPostgresProcessedEventRepository(db)
-	publisher := fake.NewEventPublisher()
-
-	getStock := application.NewGetStockUseCase(stockRepo)
-	setStock := application.NewSetStockUseCase(stockRepo)
-	consumeOrderCreated := application.NewConsumeOrderCreatedUseCase(stockRepo, processedRepo, publisher)
 
 	internalAPIKey := os.Getenv("INTERNAL_API_KEY")
 	if internalAPIKey == "" {
@@ -148,8 +140,15 @@ func newMux(db *sql.DB) (*http.ServeMux, error) {
 	verifier := qstash.NewSignatureVerifier(currentSigningKey, nextSigningKey)
 
 	// destinationURL must match exactly what QStash was told to deliver to;
-	// see QSTASH_DESTINATION_URL in the deployment env vars.
+	// see QSTASH_DESTINATION_URL in the deployment env vars. It is also the
+	// destination the real event publisher posts outbound events to.
 	destinationURL := os.Getenv("QSTASH_DESTINATION_URL")
+
+	publisher := newEventPublisher(os.Getenv("EVENT_PUBLISHER_MODE"), destinationURL, os.Getenv("QSTASH_TOKEN"))
+
+	getStock := application.NewGetStockUseCase(stockRepo)
+	setStock := application.NewSetStockUseCase(stockRepo)
+	consumeOrderCreated := application.NewConsumeOrderCreatedUseCase(stockRepo, processedRepo, publisher)
 
 	stockHandler := presentationhttp.NewStockHandler(getStock, setStock)
 	qstashHandler := presentationhttp.NewQStashHandler(verifier, consumeOrderCreated, destinationURL)
@@ -161,13 +160,38 @@ func newMux(db *sql.DB) (*http.ServeMux, error) {
 	// The QStash webhook authenticates via the Upstash-Signature header
 	// (verified inside qstashHandler.Handle), not the shared internal API
 	// key — QStash itself has no way to send that header — so it is
-	// registered without requireInternalAPIKey.
+	// registered without requireInternalAPIKey. Its correlation id comes
+	// from the event envelope (see qstashHandler.Handle), not an HTTP
+	// header, so it does not use presentationhttp.WithCorrelationID either.
 	mux.HandleFunc("POST /internal/v1/events/qstash", qstashHandler.Handle)
 
-	mux.Handle("GET /internal/v1/stock/{productId}", requireInternalAPIKey(http.HandlerFunc(stockHandler.Get)))
-	mux.Handle("PATCH /internal/v1/stock/{productId}", requireInternalAPIKey(http.HandlerFunc(stockHandler.Set)))
+	mux.Handle(
+		"GET /internal/v1/stock/{productId}",
+		presentationhttp.WithCorrelationID(requireInternalAPIKey(http.HandlerFunc(stockHandler.Get))),
+	)
+	mux.Handle(
+		"PATCH /internal/v1/stock/{productId}",
+		presentationhttp.WithCorrelationID(requireInternalAPIKey(http.HandlerFunc(stockHandler.Set))),
+	)
 
 	return mux, nil
+}
+
+// realEventPublisherMode is the only EVENT_PUBLISHER_MODE value that
+// selects the real qstash.EventPublisher; every other value — including
+// unset, empty, or a typo — falls back to the in-memory fake so a
+// misconfigured environment never silently starts delivering real events.
+const realEventPublisherMode = "real"
+
+// newEventPublisher selects the EventPublisher adapter based on mode.
+// destinationURL and token are only used when mode is "real"; the fake
+// adapter ignores them.
+func newEventPublisher(mode, destinationURL, token string) application.EventPublisher {
+	if mode == realEventPublisherMode {
+		return qstash.NewEventPublisher(destinationURL, token)
+	}
+
+	return fake.NewEventPublisher()
 }
 
 func handleHealth(w http.ResponseWriter, _ *http.Request) {
