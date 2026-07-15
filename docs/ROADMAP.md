@@ -15,7 +15,7 @@ A phase may start only when the previous phase is `Done` (blocking gate enforced
 | 5   | Payment Service (Spring Boot)  | [payment service](specs/2026-07-14-payment-service.md)                   | [phase-05](phases/phase-05-payment-service.md)          | Done        |
 | 6   | Event-Driven Integration (E2E) | [event-driven integration](specs/2026-07-15-event-driven-integration.md) | [phase-06](phases/phase-06-event-driven-integration.md) | Done        |
 | 7   | Admin Panel (Angular)          | [admin panel](specs/2026-07-15-admin-panel.md)                           | [phase-07](phases/phase-07-admin-panel.md)              | Done        |
-| 8   | Hardening & Deployment         | [hardening and deployment](specs/2026-07-15-hardening-and-deployment.md) | —                                                       | Not Started |
+| 8   | Hardening & Deployment         | [hardening and deployment](specs/2026-07-15-hardening-and-deployment.md) | [phase-08](phases/phase-08-hardening-and-deployment.md) | In Progress |
 
 ## Phase summaries
 
