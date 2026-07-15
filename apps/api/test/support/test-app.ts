@@ -17,7 +17,11 @@ export async function createTestApp(): Promise<INestApplication<App>> {
     imports: [AppModule],
   }).compile();
 
-  const app = moduleFixture.createNestApplication({ bufferLogs: true });
+  // `rawBody: true` mirrors `src/main.ts`'s `NestFactory.create` call so
+  // `request.rawBody` is populated for every handler, matching production —
+  // without it, `QStashWebhookController` always sees `rawBody` as
+  // `undefined` and rejects every signed webhook with a 401.
+  const app = moduleFixture.createNestApplication({ bufferLogs: true, rawBody: true });
 
   app.use(correlationIdMiddleware);
   app.useLogger(app.get(Logger));

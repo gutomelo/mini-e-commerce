@@ -29,6 +29,31 @@ export const TEST_JWT_REFRESH_TTL = '7d';
 export const TEST_ADMIN_EMAIL = 'admin@miniecommerce.dev';
 export const TEST_ADMIN_PASSWORD = 'admin-change-me';
 
+/**
+ * Fixed QStash signing key + destination URL for the e2e suite. Deterministic
+ * constants (rather than anything read from a real Upstash account) so
+ * `test/support/qstash-signing.ts` can produce a signature the running app's
+ * `QStashSignatureVerifier` actually accepts, without any live Upstash
+ * dependency.
+ *
+ * `QSTASH_NEXT_SIGNING_KEY` also has to be set here, even though nothing in
+ * this suite ever signs with it: `@upstash/qstash`'s `Receiver` only trusts
+ * the `currentSigningKey`/`nextSigningKey` passed into its constructor when
+ * *both* are truthy (see `getReceiverSigningKeys` in
+ * `@upstash/qstash/index.js`) — an empty-string fallback for the "next" key
+ * (which is what `QStashSignatureVerifier`'s constructor passes when
+ * `QSTASH_NEXT_SIGNING_KEY` is unset) makes the library ignore both
+ * constructor-provided keys and fall back to reading
+ * `QSTASH_CURRENT_SIGNING_KEY`/`QSTASH_NEXT_SIGNING_KEY` from `process.env`
+ * directly, which *also* requires both to be present — so every signed
+ * request fails verification ("No signing keys available") unless both env
+ * vars are set. This is purely a test-environment fixture; it does not
+ * change `QStashSignatureVerifier` itself.
+ */
+export const TEST_QSTASH_CURRENT_SIGNING_KEY = 'e2e-test-qstash-signing-key';
+export const TEST_QSTASH_NEXT_SIGNING_KEY = 'e2e-test-qstash-next-signing-key';
+export const TEST_API_QSTASH_DESTINATION_URL = 'http://localhost:3001/api/v1/events/qstash';
+
 /** Applies the test environment to `process.env`. Idempotent and safe to call more than once. */
 export function applyTestEnv(): void {
   process.env.DATABASE_URL = TEST_DATABASE_URL;
@@ -39,4 +64,7 @@ export function applyTestEnv(): void {
   process.env.JWT_REFRESH_TTL = TEST_JWT_REFRESH_TTL;
   process.env.ADMIN_EMAIL = TEST_ADMIN_EMAIL;
   process.env.ADMIN_PASSWORD = TEST_ADMIN_PASSWORD;
+  process.env.QSTASH_CURRENT_SIGNING_KEY = TEST_QSTASH_CURRENT_SIGNING_KEY;
+  process.env.QSTASH_NEXT_SIGNING_KEY = TEST_QSTASH_NEXT_SIGNING_KEY;
+  process.env.API_QSTASH_DESTINATION_URL = TEST_API_QSTASH_DESTINATION_URL;
 }

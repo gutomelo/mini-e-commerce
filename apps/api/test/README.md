@@ -67,14 +67,15 @@ run's first test executes.
 
 ## Coverage (spec acceptance criteria)
 
-| Area                                                                                                                                            | File                     |
-| ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| Register → login → protected route → refresh rotation → reused token rejected → logout revokes                                                  | `auth.e2e-spec.ts`       |
-| RBAC: CUSTOMER blocked (403) / ADMIN allowed (201) on product & category writes                                                                 | `rbac.e2e-spec.ts`       |
-| Pagination (`page`/`limit`/`meta`), filtering (`search`/`category`/`minPrice`/`maxPrice`), sorting (`sort`)                                     | `products.e2e-spec.ts`   |
-| Cache hit (repeated read served consistently, verified directly against Redis for categories) + invalidation on write (categories and products) | `cache.e2e-spec.ts`      |
-| Throttling: 429 after the 10 req/min `auth` bucket on `/auth/login`                                                                             | `throttling.e2e-spec.ts` |
-| Health check                                                                                                                                    | `app.e2e-spec.ts`        |
+| Area                                                                                                                                                                                                                                                                          | File                     |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| Register → login → protected route → refresh rotation → reused token rejected → logout revokes                                                                                                                                                                                | `auth.e2e-spec.ts`       |
+| RBAC: CUSTOMER blocked (403) / ADMIN allowed (201) on product & category writes                                                                                                                                                                                               | `rbac.e2e-spec.ts`       |
+| Pagination (`page`/`limit`/`meta`), filtering (`search`/`category`/`minPrice`/`maxPrice`), sorting (`sort`)                                                                                                                                                                   | `products.e2e-spec.ts`   |
+| Cache hit (repeated read served consistently, verified directly against Redis for categories) + invalidation on write (categories and products)                                                                                                                               | `cache.e2e-spec.ts`      |
+| Throttling: 429 after the 10 req/min `auth` bucket on `/auth/login`                                                                                                                                                                                                           | `throttling.e2e-spec.ts` |
+| Health check                                                                                                                                                                                                                                                                  | `app.e2e-spec.ts`        |
+| Event-driven integration: `order.created` publish (one event, correct `correlationId`/`totalCents`/`items`) + `payment.completed`/`payment.failed` consumption via `/events/qstash` (status transitions, idempotent redelivery, invalid-signature 401, unsupported-event 400) | `events.e2e-spec.ts`     |
 
 ## Support files
 
@@ -89,6 +90,12 @@ run's first test executes.
   types from `src/`, so assertions stay honest about the actual API shape).
 - `test/support/fixtures.ts` — `registerAndLoginCustomer()`,
   `loginAsAdmin()` (seeded admin credentials), `uniqueSuffix()`.
+- `test/support/qstash-signing.ts` — `signQStashRequest()` builds an
+  `Upstash-Signature` JWT (current signing key + destination URL fixed by
+  `test-env.ts`) that reproduces the exact claims Upstash's real signer
+  produces, so `events.e2e-spec.ts` can hand-sign `payment.completed`/
+  `payment.failed` webhook payloads and have the running app's
+  `QStashSignatureVerifier` accept them without any live Upstash dependency.
 
 ## Running locally
 

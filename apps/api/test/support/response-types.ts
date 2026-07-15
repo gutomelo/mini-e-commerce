@@ -6,6 +6,7 @@
  * resorting to `any` in the specs themselves.
  */
 import type { CategoryOutput } from '../../src/application/categories/use-cases/list-categories.use-case';
+import type { OrderOutput } from '../../src/application/orders/use-cases/order-output';
 import type { ProductOutput } from '../../src/application/products/use-cases/product-output';
 import type { ProfileOutput } from '../../src/application/users/use-cases/get-profile.use-case';
 import type { UserRole } from '../../src/domain/auth/user-role.enum';
@@ -30,3 +31,4 @@ export type ProductListResponse = ListResponse<ProductOutput>;
 export type ProductResponse = SingleResponse<ProductOutput>;
 export type CategoryListResponse = ListResponse<CategoryOutput>;
 export type CategoryResponse = SingleResponse<CategoryOutput>;
+export type OrderResponse = SingleResponse<OrderOutput>;
