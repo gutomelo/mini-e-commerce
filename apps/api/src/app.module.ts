@@ -5,6 +5,7 @@ import { HealthController } from './health.controller';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { LoggerModule } from './infrastructure/logging/logger.module';
 import { CacheModule } from './infrastructure/cache/cache.module';
+import { EventsModule } from './infrastructure/events/events.module';
 import { GlobalExceptionFilter } from './presentation/filters/global-exception.filter';
 import { AuthModule } from './presentation/auth/auth.module';
 import { UsersModule } from './presentation/users/users.module';
@@ -22,6 +23,7 @@ function resolveAuthThrottleLimit(): number {
     LoggerModule,
     PrismaModule,
     CacheModule,
+    EventsModule,
     AuthModule,
     UsersModule,
     CategoriesModule,
