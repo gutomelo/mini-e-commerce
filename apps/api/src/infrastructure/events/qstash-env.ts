@@ -36,3 +36,15 @@ export function resolveCurrentSigningKey(): string | undefined {
 export function resolveNextSigningKey(): string | undefined {
   return process.env.QSTASH_NEXT_SIGNING_KEY;
 }
+
+/**
+ * The external URL QStash was told to deliver `apps/api`'s own webhook to.
+ * Passed to {@link QStashSignatureVerifier} so it checks the signed
+ * request's `url` claim matches, exactly like `apps/inventory`/
+ * `apps/payment`'s own consumers. Undefined disables the URL check
+ * (falls back to signature-only verification) rather than rejecting
+ * every request in local dev, where this var may be unset.
+ */
+export function resolveApiDestinationUrl(): string | undefined {
+  return process.env.API_QSTASH_DESTINATION_URL;
+}

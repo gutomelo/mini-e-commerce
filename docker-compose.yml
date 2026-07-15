@@ -56,6 +56,12 @@ services:
       JWT_REFRESH_TTL: ${JWT_REFRESH_TTL:-7d}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@miniecommerce.dev}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin-change-me}
+      QSTASH_TOKEN: ${QSTASH_TOKEN:-change-me}
+      QSTASH_CURRENT_SIGNING_KEY: ${QSTASH_CURRENT_SIGNING_KEY:-change-me}
+      QSTASH_NEXT_SIGNING_KEY: ${QSTASH_NEXT_SIGNING_KEY:-change-me}
+      QSTASH_DESTINATION_URL: ${QSTASH_DESTINATION_URL:-http://inventory:8081/internal/v1/events/qstash}
+      PAYMENT_QSTASH_DESTINATION_URL: ${PAYMENT_QSTASH_DESTINATION_URL:-http://payment:8082/internal/v1/events/qstash}
+      API_QSTASH_DESTINATION_URL: ${API_QSTASH_DESTINATION_URL:-http://api:3001/api/v1/events/qstash}
     depends_on:
       postgres:
         condition: service_healthy
