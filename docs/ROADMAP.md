@@ -5,17 +5,17 @@ Single source of truth for phase status. Only `/verify-phase` may set a phase to
 **Workflow:** `/create-spec` → `/plan-phase` → `/implement-phase` → `/verify-phase`.
 A phase may start only when the previous phase is `Done` (blocking gate enforced by `/implement-phase`).
 
-| #   | Phase                          | Spec                                                               | Checklist                                          | Status      |
-| --- | ------------------------------ | ------------------------------------------------------------------ | -------------------------------------------------- | ----------- |
-| 0   | Monorepo Foundation            | [pipeline design](specs/2026-07-11-claude-code-pipeline-design.md) | [phase-00](phases/phase-00-monorepo-foundation.md) | Done        |
-| 1   | Walking Skeleton               | [walking skeleton](specs/2026-07-11-walking-skeleton.md)           | [phase-01](phases/phase-01-walking-skeleton.md)    | Done        |
-| 2   | API Core (NestJS)              | [api core](specs/2026-07-12-api-core.md)                           | [phase-02](phases/phase-02-api-core.md)            | Done        |
-| 3   | Storefront (Next.js)           | [storefront](specs/2026-07-13-storefront.md)                       | [phase-03](phases/phase-03-storefront.md)          | Done        |
-| 4   | Inventory Service (Go)         | [inventory service](specs/2026-07-13-inventory-service.md)         | [phase-04](phases/phase-04-inventory-service.md)   | Done        |
-| 5   | Payment Service (Spring Boot)  | [payment service](specs/2026-07-14-payment-service.md)             | [phase-05](phases/phase-05-payment-service.md)     | Done        |
-| 6   | Event-Driven Integration (E2E) | —                                                                  | —                                                  | Not Started |
-| 7   | Admin Panel (Angular)          | —                                                                  | —                                                  | Not Started |
-| 8   | Hardening & Deployment         | —                                                                  | —                                                  | Not Started |
+| #   | Phase                          | Spec                                                                     | Checklist                                          | Status      |
+| --- | ------------------------------ | ------------------------------------------------------------------------ | -------------------------------------------------- | ----------- |
+| 0   | Monorepo Foundation            | [pipeline design](specs/2026-07-11-claude-code-pipeline-design.md)       | [phase-00](phases/phase-00-monorepo-foundation.md) | Done        |
+| 1   | Walking Skeleton               | [walking skeleton](specs/2026-07-11-walking-skeleton.md)                 | [phase-01](phases/phase-01-walking-skeleton.md)    | Done        |
+| 2   | API Core (NestJS)              | [api core](specs/2026-07-12-api-core.md)                                 | [phase-02](phases/phase-02-api-core.md)            | Done        |
+| 3   | Storefront (Next.js)           | [storefront](specs/2026-07-13-storefront.md)                             | [phase-03](phases/phase-03-storefront.md)          | Done        |
+| 4   | Inventory Service (Go)         | [inventory service](specs/2026-07-13-inventory-service.md)               | [phase-04](phases/phase-04-inventory-service.md)   | Done        |
+| 5   | Payment Service (Spring Boot)  | [payment service](specs/2026-07-14-payment-service.md)                   | [phase-05](phases/phase-05-payment-service.md)     | Done        |
+| 6   | Event-Driven Integration (E2E) | [event-driven integration](specs/2026-07-15-event-driven-integration.md) | —                                                  | Not Started |
+| 7   | Admin Panel (Angular)          | —                                                                        | —                                                  | Not Started |
+| 8   | Hardening & Deployment         | —                                                                        | —                                                  | Not Started |
 
 ## Phase summaries
 
