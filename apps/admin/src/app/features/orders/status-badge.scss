@@ -1,0 +1,29 @@
+// Shared status chip styles for the orders feature. Imported with `@use` by
+// both `order-list-page.scss` and `order-detail-page.scss` so the two
+// read-only order screens render status consistently without duplicating
+// the color rules. Colors are deliberately subdued (no garish reds/greens)
+// to match this admin tool's understated theme.
+.status-chip {
+  display: inline-block;
+  padding: 0.15rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+
+  &--neutral {
+    background-color: #eceff1;
+    color: #455a64;
+  }
+
+  &--success {
+    background-color: #e3f2e6;
+    color: #2e6b3a;
+  }
+
+  &--warn {
+    background-color: #fbe9e7;
+    color: #a1401e;
+  }
+}
