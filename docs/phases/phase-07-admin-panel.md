@@ -26,7 +26,7 @@ Turn `apps/admin` from a bare walking-skeleton health check into a real internal
 - [x] Angular products feature: `/products` (paginated list, search/filter), create/edit form (name, slug, description, price, category), soft-delete with confirm-dialog, inline stock display and a stock-correction action per product (calling the new `/admin/inventory/:productId` endpoints); at least one component unit test (owner: angular-developer)
 - [x] Angular categories feature: `/categories` (list, create/edit/delete with confirm-dialog); a `409` from deleting a category that still has products is surfaced as a visible error, not swallowed (owner: angular-developer)
 - [x] Angular orders feature: `/orders` (list, filter by status, paginated, via `GET /admin/orders`) and `/orders/:id` (read-only detail: customer, items, total, status, timestamps, via `GET /admin/orders/:id`) — no status-editing control anywhere in this feature (owner: angular-developer)
-- [ ] Update `apps/admin/README.md` (routes, env vars, auth model, Angular Material/architecture notes) and the root README service table if needed (owner: main)
+- [x] Update `apps/admin/README.md` (routes, env vars, auth model, Angular Material/architecture notes) and the root README service table if needed (owner: main)
 
 ## Acceptance Criteria
 
