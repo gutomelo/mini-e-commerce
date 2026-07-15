@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { EVENT_NAMES } from '@mini-e-commerce/types';
 import { ProductRepository } from '../../products/ports/product-repository.port';
 import { EntityNotFoundError } from '../../../domain/errors';
-import { NewOrderItem } from '../../../domain/orders/order.entity';
+import { NewOrderItem, OrderItem } from '../../../domain/orders/order.entity';
+import { EventPublisher } from '../../ports/event-publisher.port';
 import { OrderRepository } from '../ports/order-repository.port';
 import { OrderOutput, toOrderOutput } from './order-output';
 
@@ -30,9 +32,12 @@ export interface CreateOrderInput {
  */
 @Injectable()
 export class CreateOrderUseCase {
+  private readonly logger = new Logger(CreateOrderUseCase.name);
+
   constructor(
     private readonly orderRepository: OrderRepository,
     private readonly productRepository: ProductRepository,
+    private readonly eventPublisher: EventPublisher,
   ) {}
 
   async execute(input: CreateOrderInput): Promise<OrderOutput> {
@@ -58,6 +63,35 @@ export class CreateOrderUseCase {
       items,
     });
 
+    await this.publishOrderCreated(order.id, order.totalCents, order.items);
+
     return toOrderOutput(order);
+  }
+
+  /**
+   * Publishes `order.created` using the new order's own id as the
+   * `correlationId`, giving every downstream consumer (`apps/inventory`,
+   * `apps/payment`) a single traceable identifier for the whole order
+   * lifecycle. Best-effort: `EventPublisher` implementations already never
+   * reject, but this catch is a defensive guard so a publish failure can
+   * never affect the already-committed order or the HTTP response.
+   */
+  private async publishOrderCreated(
+    orderId: string,
+    totalCents: number,
+    items: OrderItem[],
+  ): Promise<void> {
+    try {
+      await this.eventPublisher.publish(EVENT_NAMES.ORDER_CREATED, orderId, {
+        orderId,
+        totalCents,
+        items: items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
+      });
+    } catch (error) {
+      this.logger.error(
+        `Failed to publish ${EVENT_NAMES.ORDER_CREATED} for order ${orderId}`,
+        error instanceof Error ? error.stack : error,
+      );
+    }
   }
 }

@@ -1,9 +1,11 @@
+import { EVENT_NAMES } from '@mini-e-commerce/types';
 import { EntityNotFoundError } from '../../../domain/errors';
 import { Order } from '../../../domain/orders/order.entity';
 import { Product } from '../../../domain/catalog/product.entity';
 import { ProductRepository } from '../../products/ports/product-repository.port';
 import { OrderRepository } from '../ports/order-repository.port';
 import { MockedPort } from '../../../test/mocked-port';
+import { FakeEventPublisher } from '../../../infrastructure/events/fake-event-publisher';
 import { CreateOrderUseCase } from './create-order.use-case';
 
 describe('CreateOrderUseCase', () => {
@@ -53,6 +55,7 @@ describe('CreateOrderUseCase', () => {
 
   let orderRepository: MockedPort<OrderRepository>;
   let productRepository: MockedPort<ProductRepository>;
+  let eventPublisher: FakeEventPublisher;
   let useCase: CreateOrderUseCase;
 
   beforeEach(() => {
@@ -72,7 +75,8 @@ describe('CreateOrderUseCase', () => {
       update: jest.fn(),
       softDelete: jest.fn(),
     };
-    useCase = new CreateOrderUseCase(orderRepository, productRepository);
+    eventPublisher = new FakeEventPublisher();
+    useCase = new CreateOrderUseCase(orderRepository, productRepository, eventPublisher);
   });
 
   it('creates an order with correct snapshot pricing and total for a single item', async () => {
@@ -129,5 +133,44 @@ describe('CreateOrderUseCase', () => {
     ).rejects.toBeInstanceOf(EntityNotFoundError);
 
     expect(orderRepository.create).not.toHaveBeenCalled();
+  });
+
+  it('publishes exactly one order.created event with correlationId = order id and the canonical payload', async () => {
+    productRepository.findById.mockResolvedValue(headphones);
+    orderRepository.create.mockResolvedValue(createdOrder);
+
+    const result = await useCase.execute({
+      userId: 'user-1',
+      items: [{ productId: headphones.id, quantity: 2 }],
+    });
+
+    const published = eventPublisher.published();
+    expect(published).toHaveLength(1);
+    expect(published[0]).toEqual({
+      event: EVENT_NAMES.ORDER_CREATED,
+      correlationId: result.id,
+      data: {
+        orderId: createdOrder.id,
+        totalCents: createdOrder.totalCents,
+        items: createdOrder.items.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+        })),
+      },
+    });
+  });
+
+  it('still returns the created order when the event publisher throws', async () => {
+    productRepository.findById.mockResolvedValue(headphones);
+    orderRepository.create.mockResolvedValue(createdOrder);
+    jest.spyOn(eventPublisher, 'publish').mockRejectedValueOnce(new Error('QStash unreachable'));
+
+    const result = await useCase.execute({
+      userId: 'user-1',
+      items: [{ productId: headphones.id, quantity: 2 }],
+    });
+
+    expect(result.id).toBe(createdOrder.id);
+    expect(result.totalCents).toBe(createdOrder.totalCents);
   });
 });
