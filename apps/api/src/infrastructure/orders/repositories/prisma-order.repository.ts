@@ -5,6 +5,7 @@ import {
   Order,
   OrderListFilter,
   OrderListResult,
+  OrderStatus,
 } from '../../../domain/orders/order.entity';
 import { PrismaService } from '../../prisma/prisma.service';
 import type {
@@ -65,6 +66,23 @@ export class PrismaOrderRepository implements OrderRepository {
       include: { items: true },
     });
     return record ? toDomain(record) : null;
+  }
+
+  async findById(id: string): Promise<Order | null> {
+    const record = await this.prisma.order.findUnique({
+      where: { id },
+      include: { items: true },
+    });
+    return record ? toDomain(record) : null;
+  }
+
+  async updateStatus(id: string, status: OrderStatus): Promise<Order> {
+    const record = await this.prisma.order.update({
+      where: { id },
+      data: { status },
+      include: { items: true },
+    });
+    return toDomain(record);
   }
 }
 

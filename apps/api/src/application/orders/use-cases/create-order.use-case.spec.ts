@@ -60,6 +60,8 @@ describe('CreateOrderUseCase', () => {
       create: jest.fn(),
       list: jest.fn(),
       findByIdForUser: jest.fn(),
+      findById: jest.fn(),
+      updateStatus: jest.fn(),
     };
     productRepository = {
       list: jest.fn(),

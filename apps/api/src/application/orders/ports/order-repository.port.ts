@@ -3,6 +3,7 @@ import {
   Order,
   OrderListFilter,
   OrderListResult,
+  OrderStatus,
 } from '../../../domain/orders/order.entity';
 
 /**
@@ -21,4 +22,18 @@ export abstract class OrderRepository {
   abstract list(userId: string, filter: OrderListFilter): Promise<OrderListResult>;
   /** Returns `null` (not the order) when `id` exists but belongs to a different user. */
   abstract findByIdForUser(id: string, userId: string): Promise<Order | null>;
+  /**
+   * Returns the order by id, unscoped by `userId`.
+   *
+   * This is the one deliberate exception to the "every read is scoped to a
+   * `userId`" rule stated above. It exists for the QStash payment-event
+   * webhook consumer (`HandlePaymentEventUseCase`, a later task), which has
+   * no authenticated-user context — it only learns an `orderId` from an
+   * inbound `payment.completed`/`payment.failed` event payload, not a user
+   * session. Do not reuse this method for any user-facing endpoint; use
+   * `findByIdForUser` there instead.
+   */
+  abstract findById(id: string): Promise<Order | null>;
+  /** Updates only the order's status; `updatedAt` is bumped by Prisma's `@updatedAt`. */
+  abstract updateStatus(id: string, status: OrderStatus): Promise<Order>;
 }

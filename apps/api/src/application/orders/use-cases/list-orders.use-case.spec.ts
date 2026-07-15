@@ -30,6 +30,8 @@ describe('ListOrdersUseCase', () => {
       create: jest.fn(),
       list: jest.fn(),
       findByIdForUser: jest.fn(),
+      findById: jest.fn(),
+      updateStatus: jest.fn(),
     };
     useCase = new ListOrdersUseCase(orderRepository);
   });
