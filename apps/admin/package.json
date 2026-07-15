@@ -13,6 +13,7 @@
   "private": true,
   "packageManager": "pnpm@11.11.0",
   "dependencies": {
+    "@mini-e-commerce/types": "workspace:*",
     "@angular/animations": "^21.2.0",
     "@angular/cdk": "^21.2.14",
     "@angular/common": "^21.2.0",
