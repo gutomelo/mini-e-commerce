@@ -6,7 +6,12 @@ import { AppModule } from './app.module';
 import { correlationIdMiddleware } from './presentation/middleware/correlation-id.middleware';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  // `rawBody: true` makes the exact raw request `Buffer` available at
+  // `request.rawBody` (Express adapter) in every handler. The QStash webhook
+  // controller needs this to verify `Upstash-Signature` against the exact
+  // bytes that were signed — re-serializing the already-JSON-parsed body
+  // could produce different whitespace/key ordering and break verification.
+  const app = await NestFactory.create(AppModule, { bufferLogs: true, rawBody: true });
 
   // Registered before Nest binds any module-scoped middleware (nestjs-pino's
   // request logger included), so every downstream component — logger,

@@ -12,6 +12,7 @@ import { UsersModule } from './presentation/users/users.module';
 import { CategoriesModule } from './presentation/categories/categories.module';
 import { ProductsModule } from './presentation/products/products.module';
 import { OrdersModule } from './presentation/orders/orders.module';
+import { EventsPresentationModule } from './presentation/events/events.module';
 
 function resolveAuthThrottleLimit(): number {
   const raw = Number(process.env.AUTH_THROTTLE_LIMIT);
@@ -29,6 +30,7 @@ function resolveAuthThrottleLimit(): number {
     CategoriesModule,
     ProductsModule,
     OrdersModule,
+    EventsPresentationModule,
     ThrottlerModule.forRoot([
       // Default bucket applied to every route unless overridden with @Throttle.
       { name: 'default', ttl: 60_000, limit: 100 },

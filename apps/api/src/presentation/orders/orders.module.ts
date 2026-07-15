@@ -23,5 +23,6 @@ import { OrdersController } from './orders.controller';
     ListOrdersUseCase,
     GetOrderUseCase,
   ],
+  exports: [OrderRepository],
 })
 export class OrdersModule {}

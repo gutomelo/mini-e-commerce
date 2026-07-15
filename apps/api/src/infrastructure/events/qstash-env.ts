@@ -18,3 +18,21 @@ export function resolveInventoryDestinationUrl(): string | undefined {
 export function resolvePaymentDestinationUrl(): string | undefined {
   return process.env.PAYMENT_QSTASH_DESTINATION_URL;
 }
+
+/**
+ * Current QStash signing key, used by {@link QStashSignatureVerifier} to
+ * validate the `Upstash-Signature` header on inbound webhook requests.
+ * Undefined in local dev when the verifier isn't exercised against real
+ * Upstash traffic.
+ */
+export function resolveCurrentSigningKey(): string | undefined {
+  return process.env.QSTASH_CURRENT_SIGNING_KEY;
+}
+
+/**
+ * Next QStash signing key (accepted alongside the current one so a key
+ * rotation doesn't reject in-flight deliveries signed with the previous key).
+ */
+export function resolveNextSigningKey(): string | undefined {
+  return process.env.QSTASH_NEXT_SIGNING_KEY;
+}
