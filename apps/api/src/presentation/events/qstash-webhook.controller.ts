@@ -1,18 +1,9 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Post,
-  Req,
-  UnauthorizedException,
-  type RawBodyRequest,
-} from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
-import type { Request } from 'express';
 import { EVENT_NAMES } from '@mini-e-commerce/types';
 import { HandlePaymentEventUseCase } from '../../application/orders/use-cases/handle-payment-event.use-case';
-import { QStashSignatureVerifier } from '../../infrastructure/events/qstash-signature-verifier';
 import { QStashEventDto } from './dto/qstash-event.dto';
+import { QStashSignatureGuard } from './qstash-signature.guard';
 
 const ACCEPTED_EVENTS = new Set<string>([
   EVENT_NAMES.PAYMENT_COMPLETED,
@@ -21,38 +12,27 @@ const ACCEPTED_EVENTS = new Set<string>([
 
 /**
  * Consumes `payment.completed`/`payment.failed` webhooks delivered by
- * QStash. Authenticated via the `Upstash-Signature` header rather than a
- * user JWT — QStash is the only caller — so no `JwtAuthGuard` is applied,
- * matching `apps/inventory`'s and `apps/payment`'s own webhook consumers.
+ * QStash. Authenticated via `QStashSignatureGuard` (the `Upstash-Signature`
+ * header) rather than a user JWT — QStash is the only caller — so no
+ * `JwtAuthGuard` is applied, matching `apps/inventory`'s and
+ * `apps/payment`'s own webhook consumers.
+ *
+ * `QStashSignatureGuard` runs before Nest's pipes (guards precede pipes in
+ * the request lifecycle), so an unsigned/invalidly-signed request is
+ * rejected before `@Body() dto` ever triggers the global `ValidationPipe` —
+ * an unauthenticated caller never sees DTO-shape validation errors.
  *
  * Still sits behind the app-wide `ThrottlerGuard` (default bucket), which is
  * generous enough for QStash's redelivery/retry traffic.
  */
 @ApiExcludeController()
 @Controller('events')
+@UseGuards(QStashSignatureGuard)
 export class QStashWebhookController {
-  constructor(
-    private readonly signatureVerifier: QStashSignatureVerifier,
-    private readonly handlePaymentEventUseCase: HandlePaymentEventUseCase,
-  ) {}
+  constructor(private readonly handlePaymentEventUseCase: HandlePaymentEventUseCase) {}
 
   @Post('qstash')
-  async handle(
-    @Req() request: RawBodyRequest<Request>,
-    @Body() dto: QStashEventDto,
-  ): Promise<void> {
-    const signature = request.headers['upstash-signature'];
-    const rawBody = request.rawBody?.toString('utf-8');
-
-    if (typeof signature !== 'string' || !rawBody) {
-      throw new UnauthorizedException('Missing Upstash-Signature or request body');
-    }
-
-    const verified = await this.signatureVerifier.verify(signature, rawBody);
-    if (!verified) {
-      throw new UnauthorizedException('Invalid Upstash-Signature');
-    }
-
+  async handle(@Body() dto: QStashEventDto): Promise<void> {
     if (!ACCEPTED_EVENTS.has(dto.event)) {
       throw new BadRequestException(`Unsupported event "${dto.event}"`);
     }

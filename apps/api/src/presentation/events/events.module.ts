@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { HandlePaymentEventUseCase } from '../../application/orders/use-cases/handle-payment-event.use-case';
 import { QStashSignatureVerifier } from '../../infrastructure/events/qstash-signature-verifier';
 import { OrdersModule } from '../orders/orders.module';
+import { QStashSignatureGuard } from './qstash-signature.guard';
 import { QStashWebhookController } from './qstash-webhook.controller';
 
 /**
@@ -18,6 +19,6 @@ import { QStashWebhookController } from './qstash-webhook.controller';
 @Module({
   imports: [OrdersModule],
   controllers: [QStashWebhookController],
-  providers: [QStashSignatureVerifier, HandlePaymentEventUseCase],
+  providers: [QStashSignatureVerifier, QStashSignatureGuard, HandlePaymentEventUseCase],
 })
 export class EventsPresentationModule {}

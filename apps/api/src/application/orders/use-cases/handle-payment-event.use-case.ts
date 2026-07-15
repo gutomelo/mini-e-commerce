@@ -23,6 +23,14 @@ const STATUS_BY_EVENT: Record<PaymentEvent, OrderStatus> = {
  * Idempotency is enforced up front via `ProcessedEventRepository.tryClaim`:
  * QStash guarantees at-least-once delivery, so a redelivered event must be
  * a silent no-op rather than reprocessed or reported as an error.
+ *
+ * The claim and the status update are not wrapped in a single transaction
+ * (same accepted tradeoff `apps/inventory`'s `ConsumeOrderCreatedUseCase`
+ * documents): if this process crashes between the claim committing and
+ * `updateStatus` completing, a QStash redelivery of the same event will see
+ * it as already claimed and silently no-op, leaving the order stuck at its
+ * prior status. This is a deliberate simplicity/portfolio-scope tradeoff,
+ * not an oversight — revisit only if this ever needs a stronger guarantee.
  */
 @Injectable()
 export class HandlePaymentEventUseCase {
