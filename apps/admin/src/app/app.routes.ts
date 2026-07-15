@@ -3,6 +3,8 @@ import { Routes } from '@angular/router';
 import { adminGuard } from './core/auth/admin.guard';
 import { LoginPage } from './features/auth/login-page/login-page';
 import { DashboardPage } from './features/dashboard/dashboard-page/dashboard-page';
+import { ProductFormPage } from './features/products/product-form/product-form-page';
+import { ProductListPage } from './features/products/product-list/product-list-page';
 import { AppShell } from './shared/layout/app-shell/app-shell';
 
 /**
@@ -28,6 +30,11 @@ export const routes: Routes = [
     path: '',
     component: AppShell,
     canActivate: [adminGuard],
-    children: [{ path: '', component: DashboardPage, pathMatch: 'full' }],
+    children: [
+      { path: '', component: DashboardPage, pathMatch: 'full' },
+      { path: 'products', component: ProductListPage },
+      { path: 'products/new', component: ProductFormPage },
+      { path: 'products/:id/edit', component: ProductFormPage },
+    ],
   },
 ];

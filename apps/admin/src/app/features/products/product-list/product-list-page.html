@@ -1,0 +1,45 @@
+<div class="product-list-page">
+  <div class="product-list-header">
+    <h1>Products</h1>
+    <button mat-flat-button color="primary" type="button" (click)="createProduct()">
+      <mat-icon>add</mat-icon>
+      New Product
+    </button>
+  </div>
+
+  <mat-form-field appearance="outline" class="product-list-search">
+    <mat-label>Search</mat-label>
+    <input matInput [formControl]="searchControl" placeholder="Search by name" />
+  </mat-form-field>
+
+  @if (loading()) {
+    <div class="product-list-loading">
+      <mat-spinner diameter="32" />
+      <span>Loading products…</span>
+    </div>
+  } @else if (errorMessage(); as message) {
+    <p class="product-list-error" role="alert">{{ message }}</p>
+  } @else {
+    <app-data-table
+      [columns]="columns"
+      [rows]="rows()"
+      [total]="total()"
+      [pageIndex]="pageIndex()"
+      [pageSize]="pageSize()"
+      (pageChange)="onPageChange($event)"
+      (rowClick)="editProduct($event)"
+    />
+  }
+</div>
+
+<ng-template #actionsCell let-row>
+  <button
+    mat-icon-button
+    type="button"
+    color="warn"
+    aria-label="Delete product"
+    (click)="$event.stopPropagation(); deleteProduct(row)"
+  >
+    <mat-icon>delete</mat-icon>
+  </button>
+</ng-template>
