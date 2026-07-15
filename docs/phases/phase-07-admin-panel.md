@@ -42,13 +42,13 @@ Turn `apps/admin` from a bare walking-skeleton health check into a real internal
 
 ## Verification
 
-- [ ] `pnpm install` — completes without errors
-- [ ] `pnpm turbo run build lint test --filter=api` — passes (build, eslint, `jest` unit suite including the new admin-orders/inventory-proxy use-case and adapter tests)
-- [ ] `pnpm turbo run build lint test --filter=admin` — passes (Angular build, eslint, unit tests including `AuthService`/interceptor/feature component)
-- [ ] `docker compose up -d --wait postgres redis` — infra healthy for the e2e run
-- [ ] `pnpm --filter api run test:e2e` — e2e suite passes, including the new admin-orders and inventory-proxy cases (cross-customer listing/filtering, RBAC 401/403, proxy round-trip via test double)
-- [ ] `docker compose build admin api` — both images build successfully
-- [ ] `docker compose up -d --wait` — full stack healthy with the rebuilt images
-- [ ] `curl -fsS http://localhost:8080/admin/ | grep -qi "<app-root"` — admin SPA is served through the reverse proxy
-- [ ] `curl -fsS -o /dev/null -w "%{http_code}" http://localhost:8080/api/v1/admin/orders` — returns `401` (admin orders require auth)
-- [ ] `docker compose down -v` — exits 0 (clean teardown)
+- [x] `pnpm install` — completes without errors
+- [x] `pnpm turbo run build lint test --filter=api` — passes (build, eslint, `jest` unit suite including the new admin-orders/inventory-proxy use-case and adapter tests)
+- [x] `pnpm turbo run build lint test --filter=admin` — passes (Angular build, eslint, unit tests including `AuthService`/interceptor/feature component)
+- [x] `docker compose up -d --wait postgres redis` — infra healthy for the e2e run
+- [x] `pnpm --filter api run test:e2e` — e2e suite passes, including the new admin-orders and inventory-proxy cases (cross-customer listing/filtering, RBAC 401/403, proxy round-trip via test double)
+- [x] `docker compose build admin api` — both images build successfully
+- [x] `docker compose up -d --wait` — full stack healthy with the rebuilt images
+- [x] `curl -fsS http://localhost:8080/admin/ | grep -qi "<app-root"` — admin SPA is served through the reverse proxy
+- [x] `curl -fsS -o /dev/null -w "%{http_code}" http://localhost:8080/api/v1/admin/orders` — returns `401` (admin orders require auth)
+- [x] `docker compose down -v` — exits 0 (clean teardown)
