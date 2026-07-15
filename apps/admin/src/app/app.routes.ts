@@ -1,23 +1,8 @@
-import { Component } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { adminGuard } from './core/auth/admin.guard';
+import { LoginPage } from './features/auth/login-page/login-page';
 import { AppShell } from './shared/layout/app-shell/app-shell';
-
-/**
- * TEMPORARY placeholder for the `/login` page.
- *
- * The Angular auth feature task (next in this phase) replaces this with the
- * real Material login form calling `AuthService.login`. It is defined inline
- * here — rather than as its own feature file — so it is obvious it is a
- * throwaway stand-in whose only job is to keep `/login` a valid, compiling
- * route until that task lands.
- */
-@Component({
-  selector: 'app-login-placeholder',
-  template: `<p>Login page placeholder — replaced by the auth feature task.</p>`,
-})
-class LoginPagePlaceholder {}
 
 /**
  * Routing skeleton for the admin SPA.
@@ -36,7 +21,7 @@ class LoginPagePlaceholder {}
 export const routes: Routes = [
   {
     path: 'login',
-    component: LoginPagePlaceholder,
+    component: LoginPage,
   },
   {
     path: '',
