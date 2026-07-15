@@ -59,6 +59,15 @@ class ProcessOrderCreatedUseCaseTest {
             payments.put(id, payment);
             return payment;
         });
+        // ProcessOrderCreatedUseCase persists via saveAndFlush (not save) so a concurrent
+        // duplicate-orderId insert's constraint violation surfaces synchronously rather than at
+        // this transaction's eventual commit -- stub it the same way as save() above.
+        when(paymentRepository.saveAndFlush(any())).thenAnswer(invocation -> {
+            Payment payment = invocation.getArgument(0);
+            UUID id = payment.getId() != null ? payment.getId() : assignFakeId(payment);
+            payments.put(id, payment);
+            return payment;
+        });
 
         eventPublisher = new InMemoryEventPublisher();
     }
