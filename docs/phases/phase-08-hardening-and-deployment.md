@@ -38,18 +38,18 @@ Close the gaps left open across Phases 0-7 rather than adding new product featur
 
 ## Verification
 
-- [ ] `pnpm install` — completes without errors
-- [ ] `pnpm turbo run build lint test --filter=api` — passes, including the new `EVENT_PUBLISHER_MODE` factory and correlation-id-forwarding unit tests
-- [ ] `pnpm turbo run build lint test --filter=admin` — passes (build, lint, unit tests)
-- [ ] `docker compose up -d --wait postgres redis` — infra healthy for the e2e runs
-- [ ] `pnpm --filter api run test:e2e` — existing api e2e suite still passes unmodified (proves `EVENT_PUBLISHER_MODE` defaulting to `fake` changed nothing)
-- [ ] `pnpm --filter admin run test:e2e` — new Playwright suite passes (login/reject-customer, product CRUD, category-delete-409, order list/detail, stock lookup/correction)
-- [ ] `(cd apps/inventory && go build ./... && go vet ./... && gofmt -l . && go test ./...)` — passes with no `gofmt` diff, including new mode-selection and correlation-id tests
-- [ ] `docker compose exec -T postgres psql -U postgres -c "DROP DATABASE IF EXISTS mini_ecommerce_payment_test"`; `docker compose exec -T postgres psql -U postgres -c "CREATE DATABASE mini_ecommerce_payment_test"`; then `(cd apps/payment && PAYMENT_DATABASE_URL="jdbc:postgresql://localhost:5433/mini_ecommerce_payment_test?user=postgres&password=postgres" ./mvnw test)` — passes, including new mode-selection and correlation-id tests
-- [ ] `python3 -c "import yaml; yaml.safe_load(open('.github/workflows/ci.yml'))"` — exits 0 (workflow file is valid YAML)
-- [ ] `for app in web admin api inventory payment; do test -f "apps/$app/fly.toml" || echo "MISSING: $app"; done` — prints nothing (every app has a `fly.toml`)
-- [ ] `! grep -E "^\[\[services\]\]|^\[http_service\]" apps/inventory/fly.toml apps/payment/fly.toml` — exits 0 (neither declares a public HTTP route/service)
-- [ ] `test -f docs/deployment/fly-io.md && test -f docs/manual-verification/real-event-flow.md && ! grep -riE "TBD|TODO|FIXME" docs/deployment/fly-io.md docs/manual-verification/real-event-flow.md` — both docs exist with no placeholder markers
-- [ ] `docker compose build` — every image still builds successfully
-- [ ] `docker compose up -d --wait` — full stack healthy with every service defaulting to `EVENT_PUBLISHER_MODE=fake` (no `EVENT_PUBLISHER_MODE` override set in the shell/`.env`, so each service's own default applies)
-- [ ] `docker compose down -v` — exits 0 (clean teardown)
+- [x] `pnpm install` — completes without errors
+- [x] `pnpm turbo run build lint test --filter=api` — passes, including the new `EVENT_PUBLISHER_MODE` factory and correlation-id-forwarding unit tests
+- [x] `pnpm turbo run build lint test --filter=admin` — passes (build, lint, unit tests)
+- [x] `docker compose up -d --wait postgres redis` — infra healthy for the e2e runs
+- [x] `pnpm --filter api run test:e2e` — existing api e2e suite still passes unmodified (proves `EVENT_PUBLISHER_MODE` defaulting to `fake` changed nothing)
+- [x] `pnpm --filter admin run test:e2e` — new Playwright suite passes (login/reject-customer, product CRUD, category-delete-409, order list/detail, stock lookup/correction)
+- [x] `(cd apps/inventory && go build ./... && go vet ./... && gofmt -l . && go test ./...)` — passes with no `gofmt` diff, including new mode-selection and correlation-id tests
+- [x] `docker compose exec -T postgres psql -U postgres -c "DROP DATABASE IF EXISTS mini_ecommerce_payment_test"`; `docker compose exec -T postgres psql -U postgres -c "CREATE DATABASE mini_ecommerce_payment_test"`; then `(cd apps/payment && PAYMENT_DATABASE_URL="jdbc:postgresql://localhost:5433/mini_ecommerce_payment_test?user=postgres&password=postgres" ./mvnw test)` — passes, including new mode-selection and correlation-id tests
+- [x] `python3 -c "import yaml; yaml.safe_load(open('.github/workflows/ci.yml'))"` — exits 0 (workflow file is valid YAML)
+- [x] `for app in web admin api inventory payment; do test -f "apps/$app/fly.toml" || echo "MISSING: $app"; done` — prints nothing (every app has a `fly.toml`)
+- [x] `! grep -E "^\[\[services\]\]|^\[http_service\]" apps/inventory/fly.toml apps/payment/fly.toml` — exits 0 (neither declares a public HTTP route/service)
+- [x] `test -f docs/deployment/fly-io.md && test -f docs/manual-verification/real-event-flow.md && ! grep -riE "TBD|TODO|FIXME" docs/deployment/fly-io.md docs/manual-verification/real-event-flow.md` — both docs exist with no placeholder markers
+- [x] `docker compose build` — every image still builds successfully
+- [x] `docker compose up -d --wait` — full stack healthy with every service defaulting to `EVENT_PUBLISHER_MODE=fake` (no `EVENT_PUBLISHER_MODE` override set in the shell/`.env`, so each service's own default applies)
+- [x] `docker compose down -v` — exits 0 (clean teardown)
