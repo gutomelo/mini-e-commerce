@@ -29,10 +29,12 @@ Every route below requires `X-Internal-Api-Key` (compared in constant time). Not
 - `GET /internal/v1/stock/:productId` → `200 { "productId", "quantity", "updatedAt" }`, or `404` if unknown. `400` on a malformed (non-UUID) id.
 - `PATCH /internal/v1/stock/:productId` — body `{ "quantity": N }` (integer, `>= 0`) sets an absolute quantity, creating the row if it doesn't exist. `400` on a negative/non-integer body.
 
+Both routes accept an inbound `X-Correlation-Id` header (generating one if absent) and echo it back on the response; the value appears in every `slog` line for that request, matching the correlation-id discipline `apps/api` already applies to every request and this service's own QStash event path already applies via the event envelope. `apps/api`'s internal `HttpInventoryClient` forwards its own current correlation id on every call here.
+
 ## QStash event integration
 
 - **Consumes** `order.created`: `POST /internal/v1/events/qstash` verifies the `Upstash-Signature` header (via the official `qstash-go` SDK, checked against both the current and next signing key) before ever parsing the body — an invalid signature never reaches the decrement logic. Decrements stock per line item, clamped at zero (never negative; an unknown product is treated as starting from zero rather than erroring the whole event). Idempotent: a `processed_events` table keyed by the event's `correlationId` makes a QStash redelivery of the same event a no-op.
-- **Publishes** `inventory.updated` (one event per product whose stock changed) through an `EventPublisher` port. Two implementations: `internal/infrastructure/fake` (in-memory recorder, used by `cmd/server` today since nothing consumes `inventory.updated` yet) and `internal/infrastructure/qstash` (the real Upstash HTTP client, a one-line swap in `cmd/server`'s wiring once a real destination is needed).
+- **Publishes** `inventory.updated` (one event per product whose stock changed) through an `EventPublisher` port. Two implementations: `internal/infrastructure/fake` (in-memory recorder, the default so every automated check never depends on a live Upstash round-trip) and `internal/infrastructure/qstash` (the real Upstash HTTP client). `EVENT_PUBLISHER_MODE=real` switches `cmd/server`'s wiring to the real adapter (default `fake` for any other value).
 - Since `apps/api` doesn't publish `order.created` until a later phase, this consumer is proven with hand-crafted, hand-signed test requests (see `internal/presentation/http/integration_test.go`) rather than a live producer or a real Upstash round-trip.
 
 ## Environment variables
@@ -44,8 +46,9 @@ See the root `.env.example` for defaults. Compose provides safe local values aut
 - `INTERNAL_API_KEY` — shared secret required on every route except `/health`.
 - `API_BASE_URL` — base URL of the NestJS API; used only by `cmd/seed` to resolve product slugs to ids.
 - `QSTASH_CURRENT_SIGNING_KEY` / `QSTASH_NEXT_SIGNING_KEY` — used to verify inbound QStash webhook signatures (both are accepted, since QStash rotates keys).
-- `QSTASH_TOKEN` — bearer token for the real QStash publisher (not used while `cmd/server` wires the fake publisher by default).
+- `QSTASH_TOKEN` — bearer token for the real QStash publisher.
 - `QSTASH_DESTINATION_URL` — the full external URL QStash was told to deliver the webhook to; must match exactly what QStash signed.
+- `EVENT_PUBLISHER_MODE` — `fake` (default) wires the in-memory publisher used by every automated check; `real` wires the real QStash publisher above. Any value other than exactly `real` falls back to `fake`.
 
 ## Migrations and seeding
 

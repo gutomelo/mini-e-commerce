@@ -1,5 +1,7 @@
 # Mini E-Commerce
 
+[![CI](https://github.com/gutomelo/mini-e-commerce/actions/workflows/ci.yml/badge.svg)](https://github.com/gutomelo/mini-e-commerce/actions/workflows/ci.yml)
+
 A portfolio e-commerce monorepo demonstrating modern architecture across multiple stacks: Clean Architecture, event-driven communication, distributed caching, and professional engineering workflow — with intentionally simple functionality.
 
 ## Monorepo structure
@@ -26,7 +28,7 @@ docs/             # Roadmap, specs, phase checklists, decision records
 | Service   | Stack                          | Responsibility                                                                                             |
 | --------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------- |
 | web       | Next.js 16+, React, TypeScript | Customer experience: catalog, cart, checkout, orders                                                       |
-| admin     | Angular 17+, TypeScript        | Dashboard, product/order management, stock updates                                                         |
+| admin     | Angular 21, TypeScript         | Dashboard, product/category management, order review, stock updates                                        |
 | api       | NestJS, TypeScript             | Single backend for both frontends: JWT auth, users, products, orders, Redis cache, QStash event publishing |
 | inventory | Go                             | Stock queries/updates, idempotent event consumers                                                          |
 | payment   | Spring Boot, Java              | Simulated payment gateway, payment records and status                                                      |
@@ -74,9 +76,21 @@ docker compose down -v        # clean teardown
 - `inventory` and `payment` are internal-only (no host ports) — frontends talk exclusively to the API
 - PostgreSQL is published on `localhost:5433` for development tooling (the container listens on 5432 in-network; 5433 avoids clashing with a host PostgreSQL)
 
-Daily development runs outside Docker (`pnpm dev`, `go run ./cmd/server`, `./mvnw spring-boot:run`); Compose is the integration/demo environment mirroring the future Fly.io deployment.
+Daily development runs outside Docker (`pnpm dev`, `go run ./cmd/server`, `./mvnw spring-boot:run`); Compose is the integration/demo environment mirroring the Fly.io deployment topology (see [Deployment](#deployment) below).
 
 > TypeScript is pinned to the 5.9.x line workspace-wide (`pnpm-workspace.yaml` overrides) until typescript-eslint supports TypeScript >= 6.
+
+## Testing
+
+- **apps/web** and **apps/admin** each have a Playwright e2e suite (`pnpm --filter web run test:e2e`, `pnpm --filter admin run test:e2e`) driving a real browser against real, dedicated dev-server instances and databases — the storefront's covers register → login → catalog → cart → checkout → order history; the admin panel's covers ADMIN login/CUSTOMER rejection, product/category CRUD, cross-customer order review, and stock lookup/correction (the one flow that round-trips through a real `apps/inventory` Go instance).
+- **apps/api** has both a Jest unit suite (mocked ports, no real infra) and a Jest e2e suite against a real, dedicated Postgres/Redis (`pnpm --filter api run test:e2e`) covering auth rotation, RBAC, pagination/cache/throttling, the full event-driven order flow, and the admin-only endpoints.
+- **apps/inventory** (`go test ./...`) and **apps/payment** (`./mvnw test`) each have their own unit and integration suites, including hand-signed QStash webhook payloads proving idempotent event consumption without depending on a live Upstash account.
+- CI (`.github/workflows/ci.yml`) runs `pnpm turbo run build lint test` on every push/PR — the same command that drives every app uniformly, Go and Java included, via their thin `package.json` wrappers.
+- `docs/manual-verification/real-event-flow.md` is the one exception: a manual, user-run guide for proving the real (not faked) cross-service event flow against a live Upstash QStash account.
+
+## Deployment
+
+Fly.io is the deployment target: one `fly.toml` per app (`apps/web/fly.toml`, `apps/admin/fly.toml`, `apps/api/fly.toml`, `apps/inventory/fly.toml`, `apps/payment/fly.toml`), mirroring the Compose topology's access rules exactly — `apps/inventory` and `apps/payment` get no public route, reachable only from `apps/api` over Fly's private networking, the same "frontends never reach Go or Spring Boot directly" rule enforced at the deployment layer. See [docs/deployment/fly-io.md](docs/deployment/fly-io.md) for the full app-creation, secrets, and deploy sequence — a manual, user-run guide, since no live Fly.io account is available to execute or verify it automatically here.
 
 ## Documentation
 
@@ -84,3 +98,5 @@ Daily development runs outside Docker (`pnpm dev`, `go run ./cmd/server`, `./mvn
 - [docs/specs/](docs/specs/) — approved specifications
 - [docs/phases/](docs/phases/) — executable phase checklists
 - [docs/decisions/](docs/decisions/) — decision records
+- [docs/deployment/fly-io.md](docs/deployment/fly-io.md) — Fly.io deployment guide
+- [docs/manual-verification/real-event-flow.md](docs/manual-verification/real-event-flow.md) — proving the real cross-service event flow against a live Upstash QStash account

@@ -63,9 +63,12 @@ In the container, nginx serves `GET /health` → `{"status":"ok","service":"admi
 ## Testing
 
 ```bash
-pnpm --filter admin test    # Vitest unit tests (services, interceptor, components)
-pnpm --filter admin lint    # ESLint + angular-eslint
+pnpm --filter admin test        # Vitest unit tests (services, interceptor, components)
+pnpm --filter admin lint        # ESLint + angular-eslint
+pnpm --filter admin run test:e2e   # Playwright e2e suite — see below
 ```
+
+The Playwright suite (`e2e/`) drives a real Chromium browser against real, dedicated `apps/inventory`/`apps/api`/`apps/admin` dev-server instances and databases (own ports/Redis index/test databases, distinct from `apps/web`'s and `apps/api`'s own e2e suites — see `e2e/support/test-env.ts`). Covers: `ADMIN` login reaching the dashboard and `CUSTOMER` login being rejected; product create/edit/soft-delete; a category-delete `409` when it still has products; cross-customer order review; and a stock lookup/correction round-tripping through a real `apps/inventory` instance (the one scenario that cannot be faked, since `apps/api`'s `HttpInventoryClient` is always the real adapter at runtime — only `EventPublisher` has a fake/real toggle).
 
 ## Docker
 

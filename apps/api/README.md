@@ -42,6 +42,12 @@ Auth routes share a stricter throttle bucket (10 req/min); every other route use
 - **Publishes** `order.created` (correlation id = the new order's own `id`, for end-to-end traceability across services) after an order is persisted, through an `EventPublisher` port: `{ orderId, totalCents, items: [{ productId, quantity }] }` — a superset payload both `apps/inventory` (`items`) and `apps/payment` (`totalCents`) already consume unmodified. Two implementations: `FakeEventPublisher` (in-memory recorder, the active default so `/verify-phase` and local dev never depend on a live Upstash round-trip) and `QStashEventPublisher` (the real adapter, built but not yet wired as the active provider — fans the envelope out to `QSTASH_DESTINATION_URL` and `PAYMENT_QSTASH_DESTINATION_URL` as two independent, best-effort calls). A publish failure is logged, never rethrown — the order is unaffected.
 - **Consumes** `payment.completed`/`payment.failed`: `POST /events/qstash` verifies the `Upstash-Signature` header (via `@upstash/qstash`'s `Receiver`, checking both the signature over the raw request body and, when `API_QSTASH_DESTINATION_URL` is set, the signed request's destination-URL claim) before the body is ever processed. Rejects (`400`) any `event` other than `payment.completed`/`payment.failed`. Idempotent: a `ProcessedEvent` table claims `(correlationId, event)` via a single atomic `INSERT ... ON CONFLICT DO NOTHING` — a redelivery is a silent no-op, not a duplicate status change. On `payment.completed` the referenced order's status becomes `PAID`; on `payment.failed`, `PAYMENT_FAILED`. An unknown `orderId` is logged and acknowledged (not thrown), since QStash would otherwise retry forever for a payload it can never successfully process. No `JwtAuthGuard` on this route — QStash authenticates via `Upstash-Signature`, not a user session.
 - `inventory.updated` has no consumer in `apps/api` — inventory's stock decrement is fire-and-forget and has no bearing on order status.
+- `EVENT_PUBLISHER_MODE` (`fake` default / `real`) selects `FakeEventPublisher` vs. `QStashEventPublisher` at startup — see Environment variables below. Every automated check runs with `fake`; flip to `real` only with genuine `QSTASH_*` credentials configured (see [docs/manual-verification/real-event-flow.md](../../docs/manual-verification/real-event-flow.md)).
+
+## Admin endpoints (`ADMIN` role only)
+
+- `GET /admin/orders?page=&limit=&status=` / `GET /admin/orders/:id` — cross-customer order review (view-only; status stays controlled exclusively by the event-driven flow above).
+- `GET`/`PATCH /admin/inventory/:productId` — proxies to `apps/inventory`'s internal stock endpoints via `HttpInventoryClient`, authenticated with `INVENTORY_INTERNAL_API_KEY`. Forwards the caller's own correlation id as `X-Correlation-Id` on the outbound call.
 
 ## Response envelopes
 
@@ -59,10 +65,13 @@ See the root `.env.example` for defaults. Compose provides safe local values aut
 - `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` — distinct signing secrets for access and refresh tokens.
 - `JWT_ACCESS_TTL` / `JWT_REFRESH_TTL` — token lifetimes (default `15m` / `7d`).
 - `ADMIN_EMAIL` / `ADMIN_PASSWORD` — credentials for the admin account created by the seed script.
-- `QSTASH_TOKEN` — bearer token for the real `QStashEventPublisher` (unused while `FakeEventPublisher` is the active provider).
+- `QSTASH_TOKEN` — bearer token for the real `QStashEventPublisher`.
 - `QSTASH_CURRENT_SIGNING_KEY` / `QSTASH_NEXT_SIGNING_KEY` — verify inbound `payment.completed`/`payment.failed` webhook signatures (both accepted, since QStash rotates keys; same Upstash account as `apps/inventory`/`apps/payment`).
 - `QSTASH_DESTINATION_URL` / `PAYMENT_QSTASH_DESTINATION_URL` — inventory's/payment's own webhook URLs, used by the real `QStashEventPublisher` adapter to fan `order.created` out to both.
 - `API_QSTASH_DESTINATION_URL` — the external URL QStash was told to deliver `apps/api`'s own webhook to; must match exactly what QStash signed.
+- `EVENT_PUBLISHER_MODE` — `fake` (default) wires `FakeEventPublisher`, used by every automated check; `real` wires `QStashEventPublisher`. Any value other than exactly `real` falls back to `fake`.
+- `CORS_ORIGINS` — comma-separated allow-list for browser callers (only exercised by local `ng serve`/`next dev`; empty/unset disables CORS rather than allowing every origin).
+- `INVENTORY_BASE_URL` / `INVENTORY_INTERNAL_API_KEY` — base URL and shared secret used to call `apps/inventory`'s internal stock endpoints from the admin proxy above.
 
 ## Prisma workflow
 

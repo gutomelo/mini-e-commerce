@@ -29,11 +29,13 @@ Requires `X-Internal-Api-Key` (compared in constant time). Not reachable outside
 
 - `GET /internal/v1/payments/{orderId}` → `200 { "orderId", "status", "amountCents", "gatewayReference", "processedAt" }`, or `404` if no payment has been processed for that order yet.
 
+This route accepts an inbound `X-Correlation-Id` header (generating one via `UUID.randomUUID()` if absent) threaded through SLF4J MDC for the request's duration and echoed back on the response — matching the correlation-id discipline `apps/api` already applies to every request and this service's own QStash event path already applies via the event envelope.
+
 ## QStash event integration
 
 - **Consumes** `order.created`: `POST /internal/v1/events/qstash` verifies the `Upstash-Signature` header (JWT-based, via `jjwt`, checked against both the current and next signing key) before the body is ever parsed — an invalid signature never reaches the processing logic. Rejects (`400`) any `event` value other than `order.created`. Idempotent: a `processed_events` table claims the event's `correlationId` via a single atomic `INSERT ... ON CONFLICT DO NOTHING`, checked _before_ any charge processing — a redelivery of the same event is a no-op, not a double charge. An `order.created` payload for an `orderId` that already has a payment (a different `correlationId`, which shouldn't happen in practice) is rejected with `409`, never an unhandled exception.
 - **Simulated gateway**: approves a charge with a configurable success rate (`PAYMENT_GATEWAY_SUCCESS_RATE`, default `0.9`), except a reserved sentinel amount — exactly **$666.00** (`totalCents == 66600`) — which always fails, regardless of the configured rate. This gives tests (and manual exploration) a deterministic way to exercise the decline path.
-- **Publishes** `payment.completed` or `payment.failed` (exactly one per processed order) through an `EventPublisher` port. Two implementations: `InMemoryEventPublisher` (in-memory recorder, the default bean today since nothing consumes these events yet) and `QStashEventPublisher` (the real Upstash HTTP client, available but not wired as the active bean — swapping it in is a one-line change in `PaymentBeanConfiguration` once a real destination/consumer exists).
+- **Publishes** `payment.completed` or `payment.failed` (exactly one per processed order) through an `EventPublisher` port. Two implementations: `InMemoryEventPublisher` (in-memory recorder, the default so every automated check never depends on a live Upstash round-trip) and `QStashEventPublisher` (the real Upstash HTTP client). `EVENT_PUBLISHER_MODE=real` switches `PaymentBeanConfiguration`'s wiring to the real adapter (default `fake` for any other value).
 - Since `apps/api` doesn't publish `order.created` until a later phase, this consumer is proven with hand-crafted, hand-signed test requests (see `PaymentIntegrationTests`) rather than a live producer or a real Upstash round-trip.
 
 ## Environment variables
@@ -45,8 +47,9 @@ See the root `.env.example` for defaults. Compose provides safe local values aut
 - `INTERNAL_API_KEY` — shared secret required on the payments REST endpoint (mapped in compose from a distinct `PAYMENT_INTERNAL_API_KEY` host variable, so payment's secret differs from inventory's).
 - `PAYMENT_GATEWAY_SUCCESS_RATE` — fraction of simulated charges approved, excluding the sentinel amount (default `0.9`).
 - `QSTASH_CURRENT_SIGNING_KEY` / `QSTASH_NEXT_SIGNING_KEY` — used to verify inbound QStash webhook signatures (both accepted, since QStash rotates keys; same Upstash account as `apps/inventory`).
-- `QSTASH_TOKEN` — bearer token for the real QStash publisher (unused while `InMemoryEventPublisher` is the active bean).
+- `QSTASH_TOKEN` — bearer token for the real QStash publisher.
 - `PAYMENT_QSTASH_DESTINATION_URL` — the full external URL QStash was told to deliver this service's webhook to; must match exactly what QStash signed. Distinct from `apps/inventory`'s own destination URL.
+- `EVENT_PUBLISHER_MODE` — `fake` (default) wires `InMemoryEventPublisher`, used by every automated check; `real` wires the real `QStashEventPublisher` above. Any value other than exactly `real` falls back to `fake`.
 
 ## Testing
 
