@@ -19,6 +19,10 @@ apps/web/test-results/
 apps/web/playwright-report/
 apps/web/blob-report/
 apps/web/playwright/.cache/
+apps/admin/test-results/
+apps/admin/playwright-report/
+apps/admin/blob-report/
+apps/admin/playwright/.cache/
 
 # Go
 apps/inventory/bin/
