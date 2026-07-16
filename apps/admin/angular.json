@@ -53,6 +53,12 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "e2e": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "baseHref": "/"
             }
           },
           "defaultConfiguration": "production"
@@ -65,6 +71,9 @@
             },
             "development": {
               "buildTarget": "admin:build:development"
+            },
+            "e2e": {
+              "buildTarget": "admin:build:e2e"
             }
           },
           "defaultConfiguration": "development"

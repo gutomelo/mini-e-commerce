@@ -83,9 +83,28 @@ export interface ProductSummary {
   name: string;
 }
 
-/** Reads the seeded catalog directly from the API (public endpoint, no auth needed). */
+/**
+ * Reads the catalog directly from the API (public endpoint, no auth
+ * needed), sorted oldest-first.
+ *
+ * `sort=createdAt:asc` matters here: the default sort is newest-first, and
+ * this suite's own specs (`products.spec.ts`, `categories.spec.ts`) create
+ * additional products through the UI. Since specs run in a fixed order
+ * within one `playwright test` invocation, by the time a later spec calls
+ * this helper, a newest-first listing's first entries would be those
+ * freshly-created test products rather than the original catalog. That
+ * matters concretely for `stock.spec.ts`: only the 12 catalog products from
+ * `apps/api/prisma/seed.ts` have a stock row (`apps/inventory`'s own seed
+ * step only covers that fixed slug list — see `global-setup.ts`), so
+ * picking a UI-created product for the stock scenario would incorrectly
+ * find "no stock data" instead of exercising a real lookup/correction.
+ * Sorting oldest-first guarantees the original seeded catalog is returned
+ * before any test-created product.
+ */
 export async function listProductsDirect(): Promise<ProductSummary[]> {
-  const { data } = await apiRequest<ApiEnvelope<ProductSummary[]>>('/api/v1/products?limit=100');
+  const { data } = await apiRequest<ApiEnvelope<ProductSummary[]>>(
+    '/api/v1/products?limit=100&sort=createdAt:asc',
+  );
   return data;
 }
 

@@ -129,7 +129,17 @@ export default defineConfig({
       stderr: 'pipe',
     },
     {
-      command: `node_modules/.bin/ng serve --port ${TEST_ADMIN_PORT} --proxy-config proxy.conf.json`,
+      // `--configuration e2e` overrides the production `baseHref: "/admin/"`
+      // (see angular.json) back to `/` for this suite only: `ng serve`'s
+      // dev-server enforces whatever baseHref the active build
+      // configuration declares (unlike `src/index.html`'s own `<base
+      // href="/" />`, which only applies to a build that does not override
+      // it), so serving with the default configuration here made every
+      // page redirect to a "did you mean /admin/login?" dev-server error
+      // page instead of the app. Production/compose behavior (nginx serving
+      // the built app under `/admin/`) is untouched by this e2e-only
+      // configuration.
+      command: `node_modules/.bin/ng serve --configuration e2e --port ${TEST_ADMIN_PORT} --proxy-config proxy.conf.json`,
       cwd: __dirname,
       env: ADMIN_SERVER_ENV,
       url: TEST_ADMIN_BASE_URL,

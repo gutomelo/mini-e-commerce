@@ -44,6 +44,22 @@ function formatPrice(priceCents: number): string {
 }
 
 /**
+ * Sentinel distinguishing "delete cancelled" from "delete succeeded".
+ *
+ * A plain `null` cannot be used for this (as this code originally did):
+ * `ProductsService.delete()` resolves to whatever `HttpClient` parses a
+ * `204 No Content` response body as, which for the default `json`
+ * `responseType` is `null` — identical to the value this pipeline used to
+ * emit for "the user cancelled the confirm dialog". That collision meant a
+ * real, successful delete was silently treated as a cancellation and never
+ * triggered `loadProducts()`, an incorrect-list-refresh bug that a unit
+ * test mocking `delete()` with `of(undefined)` (not `null`) never caught.
+ * Mirrors the same `Symbol` sentinel pattern already used in
+ * `category-list-page.ts`'s `DELETE_CANCELLED`.
+ */
+const DELETE_CANCELLED = Symbol('product-delete-cancelled');
+
+/**
  * `/products` route: paginated, searchable product list. Row click navigates
  * to the edit form; a "New Product" button navigates to the create form; a
  * per-row delete action confirms via `ConfirmDialogService` before calling
@@ -145,14 +161,14 @@ export class ProductListPage implements OnInit {
       .pipe(
         switchMap((confirmed) => {
           if (!confirmed) {
-            return of(null);
+            return of(DELETE_CANCELLED);
           }
           return this.productsService.delete(row.id);
         }),
       )
       .subscribe({
         next: (result) => {
-          if (result === null) {
+          if (result === DELETE_CANCELLED) {
             return;
           }
           this.loadProducts();

@@ -19,11 +19,15 @@ export function tableRow(page: Page, text: string): Locator {
 
 /**
  * Waits for a `MatSnackBar` message containing the given text to appear.
- * `MatSnackBar` renders its message as plain visible text inside a live
- * region; matching on the text itself (rather than a specific container
- * class, which varies across Material versions/theming) is the stable way
- * to assert on it.
+ * Scoped to the `[matSnackBarLabel]` element `MatSnackBar`'s default
+ * template wraps its message in (see `@angular/material/snack-bar`'s
+ * `SimpleSnackBar` template) rather than a bare `page.getByText(...)`:
+ * a bare text match can resolve to more than one element when the sought
+ * text also appears elsewhere on the page at the same moment — e.g. the
+ * category name in both the still-rendering `ConfirmDialogService` overlay
+ * (mid-close-animation) and the category list row behind it — which
+ * Playwright's strict mode then rejects as ambiguous.
  */
 export async function expectSnackbar(page: Page, text: string | RegExp): Promise<void> {
-  await expect(page.getByText(text)).toBeVisible();
+  await expect(page.locator('[matSnackBarLabel]')).toContainText(text);
 }
