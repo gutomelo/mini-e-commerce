@@ -8,7 +8,9 @@ Mini E-Commerce — a portfolio monorepo (Turborepo + pnpm) demonstrating Clean 
 
 ## Language policy
 
-All code, comments, documentation, commit messages, and identifiers are written in American English — no Portuguese in any artifact.
+All code, comments, commit messages, and identifiers are written in American English — no Portuguese in any of these.
+
+**Exception — README files only:** every `README.md` (root and per-package/app) is bilingual: a complete Brazilian Portuguese section first, followed by a complete American English section, in that order, both covering the same content. This exception applies exclusively to `README.md` files aimed at human readers; specs, phase checklists, decision records, and every other doc under `docs/` stay English-only, as does all code/comments/commits.
 
 ## Build workflow (spec-driven, phase-gated)
 
@@ -28,4 +30,3 @@ Stack specialists in `.claude/agents/`: `nextjs-developer`, `angular-developer`,
 ## Hooks
 
 Registered in `.claude/settings.json` (scripts in `.claude/hooks/`): post-edit auto-formatting, secrets protection (`.env*`, keys — `.env.example` allowed), Conventional Commits validation, and roadmap context injection at session start.
-
