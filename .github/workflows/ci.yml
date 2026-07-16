@@ -1,0 +1,47 @@
+name: CI
+
+# Runs the same checks every phase's own /verify-phase already runs locally:
+# `pnpm turbo run build lint test` uniformly drives every app in this
+# monorepo, including apps/inventory (Go) and apps/payment (Spring Boot) via
+# their thin package.json wrappers (see apps/inventory/package.json,
+# apps/payment/package.json) -- the same "one pipeline, every stack" design
+# established in Phase 0. A single job mirrors that uniformity rather than
+# re-splitting the same commands into one job per stack.
+#
+# Does NOT run any docker-compose-backed e2e suite (Postgres/Redis/full-stack
+# health checks) -- provisioning service containers for every push is scoped
+# out (see docs/specs/2026-07-15-hardening-and-deployment.md's Non-Goals).
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  build-lint-test:
+    name: Build, lint, test (all apps/packages)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.5'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build, lint, test
+        run: pnpm turbo run build lint test

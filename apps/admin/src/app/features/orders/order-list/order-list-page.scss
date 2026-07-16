@@ -1,0 +1,27 @@
+@use '../status-badge';
+
+.order-list-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.order-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.order-list-filter {
+  max-width: 16rem;
+}
+
+.order-list-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.order-list-error {
+  color: var(--mat-sys-error, #b3261e);
+}

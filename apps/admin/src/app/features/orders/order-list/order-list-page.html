@@ -1,0 +1,38 @@
+<div class="order-list-page">
+  <div class="order-list-header">
+    <h1>Orders</h1>
+  </div>
+
+  <mat-form-field appearance="outline" class="order-list-filter">
+    <mat-label>Status</mat-label>
+    <mat-select [formControl]="statusControl">
+      <mat-option value="ALL">All</mat-option>
+      <mat-option value="PLACED">Placed</mat-option>
+      <mat-option value="PAID">Paid</mat-option>
+      <mat-option value="PAYMENT_FAILED">Payment failed</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  @if (loading()) {
+    <div class="order-list-loading">
+      <mat-spinner diameter="32" />
+      <span>Loading orders…</span>
+    </div>
+  } @else if (errorMessage(); as message) {
+    <p class="order-list-error" role="alert">{{ message }}</p>
+  } @else {
+    <app-data-table
+      [columns]="columns"
+      [rows]="rows()"
+      [total]="total()"
+      [pageIndex]="pageIndex()"
+      [pageSize]="pageSize()"
+      (pageChange)="onPageChange($event)"
+      (rowClick)="viewOrder($event)"
+    />
+  }
+</div>
+
+<ng-template #statusCell let-row>
+  <span [class]="statusClass(row.status)">{{ row.status }}</span>
+</ng-template>

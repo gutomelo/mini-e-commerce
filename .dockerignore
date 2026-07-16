@@ -1,0 +1,13 @@
+**/node_modules
+**/.next
+**/.angular
+**/.turbo
+**/dist
+**/coverage
+apps/payment/target
+apps/inventory/server
+.git
+docs
+.env
+.env.*
+!.env.example

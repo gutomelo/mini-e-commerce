@@ -1,0 +1,39 @@
+<div class="data-table-container">
+  <table mat-table [dataSource]="rows()" class="data-table">
+    @for (column of columns(); track column.key) {
+      <ng-container [matColumnDef]="column.key">
+        <th mat-header-cell *matHeaderCellDef>{{ column.label }}</th>
+        <td mat-cell *matCellDef="let row">
+          @if (column.cellTemplate) {
+            <ng-container
+              [ngTemplateOutlet]="column.cellTemplate"
+              [ngTemplateOutletContext]="{ $implicit: row }"
+            />
+          } @else {
+            {{ cellValue(row, column) }}
+          }
+        </td>
+      </ng-container>
+    }
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumns"
+      class="data-table-row"
+      (click)="onRowClick(row)"
+    ></tr>
+  </table>
+
+  @if (rows().length === 0) {
+    <p class="data-table-empty">No records to display.</p>
+  }
+
+  <mat-paginator
+    [length]="total()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="pageSizeOptions()"
+    (page)="onPageChange($event)"
+  ></mat-paginator>
+</div>

@@ -1,0 +1,9 @@
+node_modules
+dist
+.turbo
+coverage
+pnpm-lock.yaml
+.next
+.angular
+next-env.d.ts
+apps/api/src/generated

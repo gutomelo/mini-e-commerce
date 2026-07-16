@@ -1,0 +1,27 @@
+# Fly.io app configuration for apps/api (NestJS API Gateway/BFF).
+#
+# Deploy from the REPO ROOT (not this directory), so the build context
+# matches the same context docker-compose.yml already uses:
+#
+#   flyctl deploy --config apps/api/fly.toml --dockerfile apps/api/Dockerfile .
+#
+# See docs/deployment/fly-io.md for the full app-creation/secrets sequence
+# (every env var this app needs as a `fly secrets set`, and why it must be
+# created/deployed before apps/web and apps/admin, but after
+# apps/inventory/apps/payment).
+
+app = "mini-ecommerce-api"
+primary_region = "gru"
+
+[build]
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

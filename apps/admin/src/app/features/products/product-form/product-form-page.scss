@@ -1,0 +1,32 @@
+.product-form-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 40rem;
+}
+
+.product-form-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.product-form-error {
+  color: var(--mat-sys-error, #b3261e);
+}
+
+.product-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.product-form-stock-card {
+  margin-top: 1rem;
+}

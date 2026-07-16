@@ -1,0 +1,77 @@
+<div class="order-detail-page">
+  <a mat-button routerLink="/orders">
+    <mat-icon>arrow_back</mat-icon>
+    Back to orders
+  </a>
+
+  @if (loading()) {
+    <div class="order-detail-loading">
+      <mat-spinner diameter="32" />
+      <span>Loading order…</span>
+    </div>
+  } @else if (notFound()) {
+    <p class="order-detail-not-found" role="alert">Order not found.</p>
+  } @else if (errorMessage(); as message) {
+    <p class="order-detail-error" role="alert">{{ message }}</p>
+  } @else if (order(); as order) {
+    <mat-card class="order-detail-summary">
+      <mat-card-header>
+        <mat-card-title>Order {{ order.id }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <dl class="order-detail-fields">
+          <div>
+            <dt>Customer</dt>
+            <dd>{{ order.userEmail }}</dd>
+          </div>
+          <div>
+            <dt>Status</dt>
+            <dd>
+              <span [class]="statusClass()">{{ order.status }}</span>
+            </dd>
+          </div>
+          <div>
+            <dt>Total</dt>
+            <dd>{{ totalDisplay() }}</dd>
+          </div>
+          <div>
+            <dt>Placed</dt>
+            <dd>{{ createdDisplay() }}</dd>
+          </div>
+        </dl>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="order-detail-items">
+      <mat-card-header>
+        <mat-card-title>Line items</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="itemRows()" class="order-items-table">
+          <ng-container matColumnDef="productName">
+            <th mat-header-cell *matHeaderCellDef>Product</th>
+            <td mat-cell *matCellDef="let item">{{ item.productName }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="unitPriceDisplay">
+            <th mat-header-cell *matHeaderCellDef>Unit price</th>
+            <td mat-cell *matCellDef="let item">{{ item.unitPriceDisplay }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef>Quantity</th>
+            <td mat-cell *matCellDef="let item">{{ item.quantity }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="subtotalDisplay">
+            <th mat-header-cell *matHeaderCellDef>Subtotal</th>
+            <td mat-cell *matCellDef="let item">{{ item.subtotalDisplay }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="itemColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: itemColumns"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

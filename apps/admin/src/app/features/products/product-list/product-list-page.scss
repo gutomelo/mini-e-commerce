@@ -1,0 +1,25 @@
+.product-list-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.product-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.product-list-search {
+  max-width: 24rem;
+}
+
+.product-list-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.product-list-error {
+  color: var(--mat-sys-error, #b3261e);
+}

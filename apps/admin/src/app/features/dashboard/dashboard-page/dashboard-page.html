@@ -1,0 +1,47 @@
+<div class="dashboard-page">
+  <h1 class="dashboard-title">Dashboard</h1>
+
+  @if (loading()) {
+    <div class="dashboard-loading" role="status" aria-live="polite">
+      <mat-spinner diameter="40" />
+      <p>Loading dashboard stats…</p>
+    </div>
+  } @else if (errorMessage(); as message) {
+    <div class="dashboard-error" role="alert">
+      <p>{{ message }}</p>
+      <button mat-stroked-button color="primary" type="button" (click)="retry()">Retry</button>
+    </div>
+  } @else if (stats(); as data) {
+    <div class="stat-grid">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <p class="stat-label">Total Products</p>
+          <p class="stat-value">{{ data.totalProducts }}</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <p class="stat-label">Total Categories</p>
+          <p class="stat-value">{{ data.totalCategories }}</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <p class="stat-label">Total Orders</p>
+          <p class="stat-value">{{ data.totalOrders }}</p>
+        </mat-card-content>
+      </mat-card>
+
+      @for (status of orderStatuses; track status) {
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <p class="stat-label">Orders — {{ orderStatusLabels[status] }}</p>
+            <p class="stat-value">{{ data.ordersByStatus[status] }}</p>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

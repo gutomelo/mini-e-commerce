@@ -1,0 +1,25 @@
+# Fly.io app configuration for apps/payment (Spring Boot payment service).
+#
+# Deliberately declares NO [http_service]/[[services]] block: this app is
+# never assigned a public route or certificate, matching the project's
+# "frontends/public internet never reach Go or Spring Boot directly" rule
+# at the deployment-topology level, not just the reverse-proxy level. It is
+# still reachable from apps/api over Fly's private networking at
+# `mini-ecommerce-payment.internal:8082` (no extra configuration needed --
+# every Fly app is reachable over 6PN private networking by default).
+#
+# Deploy from WITHIN apps/payment/ (its Dockerfile is self-contained,
+# matching docker-compose.yml's own `context: apps/payment`):
+#
+#   cd apps/payment && flyctl deploy
+#
+# See docs/deployment/fly-io.md for the full app-creation/secrets sequence.
+
+app = "mini-ecommerce-payment"
+primary_region = "gru"
+
+[build]
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
