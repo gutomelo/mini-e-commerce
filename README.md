@@ -1,7 +1,5 @@
 # Mini E-Commerce
 
-[![CI](https://github.com/gutomelo/mini-e-commerce/actions/workflows/ci.yml/badge.svg)](https://github.com/gutomelo/mini-e-commerce/actions/workflows/ci.yml)
-
 🇧🇷 [Português (Brasil)](#português-brasil) · 🇺🇸 [English (US)](#english-us)
 
 ---
@@ -91,7 +89,7 @@ O desenvolvimento diário roda fora do Docker (`pnpm dev`, `go run ./cmd/server`
 - **apps/web** e **apps/admin** têm, cada um, uma suite e2e em Playwright (`pnpm --filter web run test:e2e`, `pnpm --filter admin run test:e2e`) dirigindo um navegador real contra instâncias reais e dedicadas de dev-server e bancos de dados — a do storefront cobre registro → login → catálogo → carrinho → checkout → histórico de pedidos; a do painel administrativo cobre login de ADMIN/rejeição de CUSTOMER, CRUD de produtos/categorias, revisão de pedidos entre clientes, e consulta/correção de estoque (o único fluxo que passa por uma instância real do `apps/inventory` em Go).
 - **apps/api** tem tanto uma suite de testes unitários em Jest (ports mockados, sem infraestrutura real) quanto uma suite e2e em Jest contra um Postgres/Redis real e dedicado (`pnpm --filter api run test:e2e`) cobrindo rotação de autenticação, RBAC, paginação/cache/throttling, o fluxo completo de pedidos orientado a eventos, e os endpoints exclusivos de admin.
 - **apps/inventory** (`go test ./...`) e **apps/payment** (`./mvnw test`) têm, cada um, suas próprias suites de teste unitário e de integração, incluindo payloads de webhook QStash assinados manualmente que provam o consumo idempotente de eventos sem depender de uma conta Upstash real.
-- O CI (`.github/workflows/ci.yml`) roda `pnpm turbo run build lint test` em cada push/PR — o mesmo comando que dirige todos os apps de forma uniforme, incluindo Go e Java, via seus wrappers finos de `package.json`.
+- O CI (`.github/workflows/ci.yml`) roda `pnpm turbo run build lint test` — o mesmo comando que dirige todos os apps de forma uniforme, incluindo Go e Java, via seus wrappers finos de `package.json`. **Desativado em 2026-10-15**: só roda por disparo manual na aba Actions; a validação é local.
 - `docs/manual-verification/real-event-flow.md` é a única exceção: um guia manual, executado pelo usuário, para provar o fluxo real (não simulado) de eventos entre serviços contra uma conta Upstash QStash de verdade.
 
 ### Deployment
@@ -194,7 +192,7 @@ Daily development runs outside Docker (`pnpm dev`, `go run ./cmd/server`, `./mvn
 - **apps/web** and **apps/admin** each have a Playwright e2e suite (`pnpm --filter web run test:e2e`, `pnpm --filter admin run test:e2e`) driving a real browser against real, dedicated dev-server instances and databases — the storefront's covers register → login → catalog → cart → checkout → order history; the admin panel's covers ADMIN login/CUSTOMER rejection, product/category CRUD, cross-customer order review, and stock lookup/correction (the one flow that round-trips through a real `apps/inventory` Go instance).
 - **apps/api** has both a Jest unit suite (mocked ports, no real infra) and a Jest e2e suite against a real, dedicated Postgres/Redis (`pnpm --filter api run test:e2e`) covering auth rotation, RBAC, pagination/cache/throttling, the full event-driven order flow, and the admin-only endpoints.
 - **apps/inventory** (`go test ./...`) and **apps/payment** (`./mvnw test`) each have their own unit and integration suites, including hand-signed QStash webhook payloads proving idempotent event consumption without depending on a live Upstash account.
-- CI (`.github/workflows/ci.yml`) runs `pnpm turbo run build lint test` on every push/PR — the same command that drives every app uniformly, Go and Java included, via their thin `package.json` wrappers.
+- CI (`.github/workflows/ci.yml`) runs `pnpm turbo run build lint test` — the same command that drives every app uniformly, Go and Java included, via their thin `package.json` wrappers. **Disabled on 2026-10-15**: it only runs when triggered manually from the Actions tab; checks run locally.
 - `docs/manual-verification/real-event-flow.md` is the one exception: a manual, user-run guide for proving the real (not faked) cross-service event flow against a live Upstash QStash account.
 
 ### Deployment

@@ -12,10 +12,11 @@ name: CI
 # health checks) -- provisioning service containers for every push is scoped
 # out (see docs/specs/2026-07-15-hardening-and-deployment.md's Non-Goals).
 
+# Disabled by the author's decision (2026-10-15): checks run locally (/verify-phase,
+# `pnpm turbo run build lint test`). Runs only when triggered manually from the Actions
+# tab. To re-enable, restore the `push` (branches: [main, master]) and `pull_request` triggers.
 on:
-  push:
-    branches: [main, master]
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   build-lint-test:
